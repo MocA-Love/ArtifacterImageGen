@@ -12,7 +12,8 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 def culculate_op(data:dict):
 
-    cwd = os.path.dirname(os.path.abspath(__file__))
+    #cwd = os.path.dirname(os.path.abspath(__file__))
+    cwd = "./ArtifacterImageGen"
     with codecs.open(f'{cwd}/Assets/duplicate.json', 'r',encoding='utf-8') as f:
         dup = json.load(f)
     with codecs.open(f'{cwd}/Assets/subopM.json', 'r',encoding='utf-8') as f:
@@ -221,7 +222,8 @@ def generation(data):
     ArtifactsData : dict = data.get('Artifacts')
 
 
-    cwd = os.path.abspath(os.path.dirname(__file__))
+    #cwd = os.path.dirname(os.path.abspath(__file__))
+    cwd = "./ArtifacterImageGen"
     config_font = lambda size : ImageFont.truetype(f'{cwd}/Assets/ja-jp.ttf',size)
     
     Base = Image.open(f'{cwd}/Base/{element}.png')
@@ -555,26 +557,27 @@ def generation(data):
             D.rounded_rectangle((1818,263,1862,288),1,'black')
             D.text((1831,265),str(q),font=config_font(19))
             
-    premium = read_json(f'{cwd}/Assets/premium.json')
-    user_badge = premium.get(f'{data.get("uid")}')
-    if user_badge:
-        for i,b in enumerate(user_badge):
-            badge = Image.open(f'{cwd}/badge/{b}.png').convert('RGBA').resize((38,38))
-            badge_mask = badge.copy()
+    #premium = read_json(f'{cwd}/Assets/premium.json')
+    #user_badge = premium.get(f'{data.get("uid")}')
+    #if user_badge:
+    #    for i,b in enumerate(user_badge):
+    #        badge = Image.open(f'{cwd}/badge/{b}.png').convert('RGBA').resize((38,38))
+    #        badge_mask = badge.copy()
+    #        
+    #        Base.paste(badge,(1843-i*45,533),mask=badge_mask)
             
-            Base.paste(badge,(1843-i*45,533),mask=badge_mask)
-            
-    Base.show()
-    Base.save(f'{cwd}/Tests/Image.png')
-            
-        
+    #Base.show()
+    #Base.save(f'{cwd}/Tests/Image.png')
             
         
+            
         
         
-    
-    
-    return pil_to_base64(Base,format='png')
+        
+    buffer = BytesIO()
+    Base.save(buffer,"png")
+    return buffer
+    #return pil_to_base64(Base,format='png')
         
     
     
@@ -588,4 +591,4 @@ def pil_to_base64(img, format="jpeg"):
 
 
 
-generation(read_json('data.json'))
+#generation(read_json('data.json'))
