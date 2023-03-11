@@ -458,6 +458,7 @@ def generation(data):
         D.rounded_rectangle((373+i*373-int(levlen),748,375+i*373,771),fill='black',radius=2)
         D.text((374+i*373-levlen,749),f'+{details["Level"]}',font=config_font(21))
         
+        """
         if details['Level'] == 20 and details['rarelity'] == 5:
             c_data = {}
             for a in details["sub"]:
@@ -466,6 +467,7 @@ def generation(data):
                 else:
                     c_data[a['option']] = str(a["value"])
             psb = culculate_op(c_data)
+        """
             
         if len(details['sub']) == 0:
             continue
@@ -473,6 +475,7 @@ def generation(data):
         for a,sub in enumerate(details['sub']):
             SubOP = sub['option']
             SubVal = sub['value']
+            SubVals = sub["values"]
             if SubOP in ['HP','攻撃力','防御力']:
                 D.text((79+373*i,811+50*a),optionmap.get(SubOP) or SubOP,font=config_font(25),fill=(255,255,255,190))
             else:
@@ -491,8 +494,8 @@ def generation(data):
                     D.text((375+i*373-SubSize,811+50*a),format(SubVal,","),font=config_font(25),fill=(255,255,255))
             
             if details['Level'] == 20 and details['rarelity'] == 5:
-                nobi = D.textlength("+".join(map(str,psb[a])),font=config_font(11))
-                D.text((375+i*373-nobi,840+50*a),"+".join(map(str,psb[a])),fill=(255, 255, 255, 160),font=config_font(11))
+                nobi = D.textlength("+".join(map(str,SubVals)),font=config_font(11))
+                D.text((375+i*373-nobi,840+50*a),"+".join(map(str,SubVals)),fill=(255, 255, 255, 160),font=config_font(11))
         
         Score = float(ScoreData[parts])
         ATFScorelen = D.textlength(str(Score),config_font(36))
