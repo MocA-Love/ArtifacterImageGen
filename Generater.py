@@ -467,6 +467,7 @@ def generation(data):
                 else:
                     c_data[a['option']] = str(a["value"])
             psb = culculate_op(c_data)
+        print(psb)
         """
             
         if len(details['sub']) == 0:
