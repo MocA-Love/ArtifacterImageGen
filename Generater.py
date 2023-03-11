@@ -372,7 +372,7 @@ def generation(data):
     
 
     BaseAtk = Image.open(f'{cwd}/emotes/基礎攻撃力.png').resize((23,23))
-    BaseAtkmask = BaseAtk.copy()
+    BaseAtkmask = BaseAtk.copy().convert("RGBA")
     Base.paste(BaseAtk,(1600,120),mask=BaseAtkmask)
     D.text((1623,120),f'基礎攻撃力  {WeaponBaseATK}',font=config_font(23))
     
@@ -384,7 +384,7 @@ def generation(data):
     }
     if WeaponSubOPKey != None:
         BaseAtk = Image.open(f'{cwd}/emotes/{WeaponSubOPKey}.png').resize((23,23))
-        BaseAtkmask = BaseAtk.copy()
+        BaseAtkmask = BaseAtk.copy().convert("RGBA")
         Base.paste(BaseAtk,(1600,155),mask=BaseAtkmask)
         
         D.text((1623,155),f'{optionmap.get(WeaponSubOPKey) or WeaponSubOPKey}  {str(WeaponSubOPValue)+"%" if WeaponSubOPKey in disper else format(WeaponSubOPValue,",")}',font=config_font(23))
@@ -482,7 +482,7 @@ def generation(data):
             else:
                 D.text((79+373*i,811+50*a),optionmap.get(SubOP) or SubOP,font=config_font(25))
             SubIcon = Image.open(f'{cwd}/emotes/{SubOP}.png').resize((30,30))
-            SubMask = SubIcon.copy()
+            SubMask = SubIcon.copy().convert("RGBA")
             Base.paste(SubIcon,(44+373*i,811+50*a),mask=SubMask)
             if SubOP in disper:
                 SubSize = D.textlength(f'{float(SubVal)}%',config_font(25))
