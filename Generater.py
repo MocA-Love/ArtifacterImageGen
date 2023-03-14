@@ -316,6 +316,7 @@ def generation(data):
     
     D.text((30,20),CharacterName,font=config_font(48))
     levellength = D.textlength("Lv."+str(CharacterLevel),font=config_font(25))
+    D.text((35,75),"Lv."+str(CharacterLevel),font=config_font(25))
     if FriendShip:
         friendshiplength = D.textlength(str(FriendShip),font=config_font(25))
         D.rounded_rectangle((35+levellength+5,74,77+levellength+friendshiplength,102),radius=2,fill="black")
@@ -324,8 +325,6 @@ def generation(data):
         Fmask = FriendShipIcon.copy()
         Base.paste(FriendShipIcon,(42+int(levellength),76),mask=Fmask)
         D.text((73+levellength,74),str(FriendShip),font=config_font(25))
-    D.text((35,75),"Lv."+str(CharacterLevel),font=config_font(25))
-    D.text((73+levellength,74),font=config_font(25))
     
     D.text((42,397),f'Lv.{CharacterTalent["通常"]}',font=config_font(17),fill='aqua' if CharacterTalent["通常"] >= 10 else None)
     D.text((42,502),f'Lv.{CharacterTalent["スキル"]}',font=config_font(17),fill='aqua' if CharacterTalent["スキル"] >= 10 else None)
