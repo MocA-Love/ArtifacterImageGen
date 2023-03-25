@@ -599,7 +599,6 @@ class CynoGenerator:
                 D.text((1831,265),str(q),font=config_font(19))
             
         buffer = BytesIO()
-        Base.show()
         Base.save(buffer,"png")
         return buffer
         #return pil_to_base64(Base,format='png')
