@@ -197,7 +197,10 @@ class CynoGenerator:
         CharacterName : str = character.name
         CharacterConstellations :int = character.constellations_unlocked
         CharacterLevel : int = character.level
-        FriendShip : int = character.friendship_level
+        if (character.id == 10000005) or (character.id == 10000007):
+            FriendShip = None
+        else:
+            FriendShip : int = character.friendship_level
         #CharacterStatus : CharacterStats = character.stats
         CharacterStatus : dict = {
             "HP": round(character.stats.FIGHT_PROP_MAX_HP.value),
@@ -236,30 +239,25 @@ class CynoGenerator:
             match e.detail.artifact_type.value:
                 case "EQUIP_BRACER":
                     ArtifactsData["flower"],score = self.set_artifact(e,score_type)
-                    ScoreFlower : float = score
+                    ScoreData["flower"] = score
                     ScoreTotal += score
                 case "EQUIP_NECKLACE":
                     ArtifactsData["wing"],score = self.set_artifact(e,score_type)
-                    ScoreWing : float = score
+                    ScoreData["wing"] = score
                     ScoreTotal += score
                 case "EQUIP_SHOES":
                     ArtifactsData["clock"],score = self.set_artifact(e,score_type)
-                    ScoreClock : float = score
+                    ScoreData["clock"] : float = score
                     ScoreTotal += score
                 case "EQUIP_RING":
                     ArtifactsData["cup"],score = self.set_artifact(e,score_type)
-                    ScoreCup : float = score
+                    ScoreData["cup"] = score
                     ScoreTotal += score
                 case "EQUIP_DRESS":
                     ArtifactsData["crown"],score = self.set_artifact(e,score_type)
-                    ScoreCrown : float = score
+                    ScoreData["crown"] = score
                     ScoreTotal += score
         ScoreTotal = round(ScoreTotal,1)
-        ScoreData["flower"] = ScoreFlower
-        ScoreData["wing"] = ScoreWing
-        ScoreData["clock"] = ScoreClock
-        ScoreData["cup"] = ScoreCup
-        ScoreData["crown"] = ScoreCrown
         
         #ScoreTotal :float = ScoreData.get('total')
         
@@ -494,18 +492,6 @@ class CynoGenerator:
             levlen = D.textlength(f'+{details["Level"]}',config_font(21))
             D.rounded_rectangle((373+i*373-int(levlen),748,375+i*373,771),fill='black',radius=2)
             D.text((374+i*373-levlen,749),f'+{details["Level"]}',font=config_font(21))
-            
-            """
-            if details['Level'] == 20 and details['rarelity'] == 5:
-                c_data = {}
-                for a in details["sub"]:
-                    if a ['option'] in disper:
-                        c_data[a['option']] = str(float(a["value"]))
-                    else:
-                        c_data[a['option']] = str(a["value"])
-                psb = culculate_op(c_data)
-            print(psb)
-            """
                 
             if len(details['sub']) == 0:
                 continue
