@@ -6,18 +6,21 @@ async def main():
   gen_client = CynoGenerator(cwd=".")
   if "player_info" not in st.session_state:
     st.session_state.player_info = False
-  #st.session_state.character_info = False
 
   st.set_page_config(
     page_title="CYNO-Builder on Web",
     page_icon="Assets/cyno.png",
+    layout="wide"
   )
   content = """
   # Web版Artifacter (CYNO-Builder)
+  ##### 原神のUIDからビルドカードを生成できます  
+  - <a href='https://twitter.com/ArtifacterBot'>Artifacter</a>
+  - <a href='https://twitter.com/_0kq_'>開発者Twitter</a>
   """
-  st.write(content)
+  st.write(content,unsafe_allow_html=True)
   UID = st.text_input("UIDを入力")
-  if st.button("プレイヤー情報の取得", key="get_player_info",on_click=callback) or st.session_state.player_info:
+  if st.button("プレイヤー情報の取得", key="get_player_info",on_click=session_player) or st.session_state.player_info:
       placeholder = st.empty()
       placeholder.write("プレイヤー情報を取得中...")
       try:
@@ -65,13 +68,12 @@ async def main():
           placeholder.write("ビルドカードを生成中...")
           Image = gen_client.generation(characters[character],score_types[score_type])
           placeholder.image(Image)
+          st.write("画像を長押し / 右クリックで保存できます。")
       else:
         st.write("キャラクター情報の取得に失敗しました。")
 
-def callback():
+def session_player():
   st.session_state.player_info = True
-  #print(st.session_state)
-
 
 def gen_image(client,character):
   st.write("ビルドカードを生成中...")
