@@ -4,7 +4,7 @@ from Generator import CynoGenerator
 import requests
 
 async def main():
-  gen_client = CynoGenerator()
+  gen_client = CynoGenerator(cwd=".")
   if "player_info" not in st.session_state:
     st.session_state.player_info = False
   #st.session_state.character_info = False
