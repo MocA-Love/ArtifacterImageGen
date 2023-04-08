@@ -10,10 +10,11 @@ async def main():
   #st.session_state.character_info = False
 
   st.set_page_config(
-    page_title="CYNO Builder"
+    page_title="CYNO-Builder on Web",
+    page_icon="Assets/cyno.png",
   )
   content = """
-  # Web版Artifacter
+  # Web版Artifacter (CYNO-Builder)
   """
   st.write(content)
   UID = st.text_input("UIDを入力")
