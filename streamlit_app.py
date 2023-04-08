@@ -1,7 +1,6 @@
 import streamlit as st
 import asyncio
 from Generator import CynoGenerator
-import requests
 
 async def main():
   gen_client = CynoGenerator(cwd=".")
