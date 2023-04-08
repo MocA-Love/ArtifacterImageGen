@@ -15,7 +15,7 @@ from PIL import ImageFile
 class CynoGenerator:
     def __init__(self):
         ImageFile.LOAD_TRUNCATED_IMAGES = True
-        self.cwd = "./ArtifacterImageGen"
+        self.cwd = "."
         self.status_prop = self.read_json(self.cwd+"/mapping/status_prop.json")
         self.subop = self.set_subop()
         self.score_type_dict = {
