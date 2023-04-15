@@ -1,7 +1,8 @@
+# CYNO Builder  
+
 [![Twitter](https://img.shields.io/badge/Twitter-%40__0kq__-1DA1F2?logo=twitter&style=flat-square)](https://twitter.com/_0kq_)
 [![Discord](https://img.shields.io/discord/972865249583702086?logo=Discord&label=Discord&style=flat-square)](https://discord.gg/9gPuaFWXzX)
 
-# CYNO Builder  
 ### Artifacterの見た目を引き継いだビルドカードジェネレーター  
 Artifacterそっくりの画像生成が行えます。  
 CYNOは日本語でセノです  
