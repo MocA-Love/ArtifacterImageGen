@@ -19,6 +19,7 @@ async def main():
   [![Discord](https://img.shields.io/discord/972865249583702086?logo=Discord&label=Discord&style=flat-square)](https://discord.gg/9gPuaFWXzX)
   [![FANBOX](https://img.shields.io/badge/%E9%96%8B%E7%99%BA%E6%94%AF%E6%8F%B4-FANBOX-orange?style=flat-square)](https://net0kq.fanbox.cc/)
   ##### 原神のUIDからビルドカードを生成できます  
+  ※バグ報告はDiscordからお願いします
   """
   st.write(content,unsafe_allow_html=True)
   UID = st.text_input("UIDを入力")
