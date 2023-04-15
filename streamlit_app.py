@@ -15,8 +15,10 @@ async def main():
   content = """
   # Web版Artifacter (CYNO-Builder)
   ##### 原神のUIDからビルドカードを生成できます  
-  - <a href='https://twitter.com/ArtifacterBot'>Artifacter</a>
-  - <a href='https://twitter.com/_0kq_'>開発者Twitter</a>
+  - [Artifacter](https://twitter.com/ArtifacterBot)
+  - [開発者Twitter](https://twitter.com/_0kq_)
+  - [Discord](https://discord.gg/9gPuaFWXzX) (バグ報告はこちらにお願いします)
+  - [開発支援](https://net0kq.fanbox.cc/)
   """
   st.write(content,unsafe_allow_html=True)
   UID = st.text_input("UIDを入力")

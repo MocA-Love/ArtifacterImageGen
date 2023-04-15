@@ -1,2 +1,2 @@
--e git+https://github.com/mrwan200/EnkaNetwork.py.git#egg=EnkaNetwork.py
+-e git+https://github.com/mrwan200/EnkaNetwork.py.git#egg=enkanetwork.py
 pillow

@@ -1,11 +1,10 @@
 from io import BytesIO
-import io
-from PIL import Image,ImageFont,ImageDraw,ImageEnhance,ImageFilter
-import codecs,json
+from PIL import Image,ImageFont,ImageDraw,ImageEnhance
+import json
 import os 
 import requests
 from typing import List
-from enkanetwork import EnkaNetworkAPI, CharacterInfo, CharacterStats, CharacterSkill, Equipments, EquipmentsStats
+from enkanetwork import EnkaNetworkAPI, CharacterInfo, CharacterSkill, Equipments, EquipmentsStats
 from collections import Counter
 import base64
 
@@ -229,7 +228,7 @@ class CynoGenerator:
         WeaponBaseATK: int = round(Weapon.detail.mainstats.value)
         WeaponSubOP : EquipmentsStats = Weapon.detail.substats[0] if Weapon.detail.substats else None
         WeaponSubOPKey : str = WeaponSubOP.name if WeaponSubOP else None
-        WeaponSubOPValue : str = WeaponSubOP.value if WeaponSubOP else None
+        WeaponSubOPValue : int | float = WeaponSubOP.value if WeaponSubOP else None
         
         ScoreData : dict = {}
         ScoreCVBasis : str = score_type
@@ -259,12 +258,6 @@ class CynoGenerator:
                     ScoreTotal += score
         ScoreTotal = round(ScoreTotal,1)
         
-        #ScoreTotal :float = ScoreData.get('total')
-        
-        #ArtifactsData : dict = data.get('Artifacts')
-
-
-        #self.cwd = os.path.dirname(os.path.abspath(__file__))
         config_font = lambda size : ImageFont.truetype(f'{self.cwd}/Assets/ja-jp.ttf',size)
         
         Base = Image.open(f'{self.cwd}/Base/{element}.png')
@@ -422,7 +415,7 @@ class CynoGenerator:
             BaseAtkmask = BaseAtk.copy().convert("RGBA")
             Base.paste(BaseAtk,(1600,155),mask=BaseAtkmask)
             
-            D.text((1623,155),f'{optionmap.get(WeaponSubOPKey) or WeaponSubOPKey}  {str(WeaponSubOPValue)+"%" if WeaponSubOPKey in disper else format(WeaponSubOPValue,",")}',font=config_font(23))
+            D.text((1623,155),f'{optionmap.get(WeaponSubOPKey) or WeaponSubOPKey}  {str(WeaponSubOPValue)+"%" if isinstance(WeaponSubOPValue,float) else format(WeaponSubOPValue,",")}',font=config_font(23))
         
             
         
@@ -597,8 +590,3 @@ def pil_to_base64(img, format="jpeg"):
     img_str = base64.b64encode(buffer.getvalue()).decode("ascii")
 
     return img_str
-
-
-
-
-#generation(read_json('data.json'))
