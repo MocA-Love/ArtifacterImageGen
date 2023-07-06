@@ -1,6 +1,7 @@
 import streamlit as st
 import asyncio
 from Generator import CynoGenerator
+from enkanetwork.exception import *
 
 async def main():
   gen_client = CynoGenerator(cwd=".")
@@ -33,9 +34,25 @@ async def main():
       try:
         async with gen_client.client:
           player_data = await gen_client.client.fetch_user_by_uid(UID)
-      except:
+      except EnkaServerRateLimit:
         placeholder.empty()
-        st.write("プレイヤー情報の取得に失敗しました。")
+        st.write("レートリミットに達しました。")
+        return
+      except EnkaServerMaintanance:
+        placeholder.empty()
+        st.write("EnkaNetworkがメンテナンス中です。")
+        return
+      except EnkaPlayerNotFound:
+        placeholder.empty()
+        st.write("プレイヤーが見つかりませんでした。")
+        return
+      except EnkaServerError:
+        placeholder.empty()
+        st.write("EnkaNetworkでエラーが発生しました。")
+        return
+      except Exception as e:
+        placeholder.empty()
+        st.write(f"プレイヤー情報の取得に失敗しました。\nエラー: {e}")
         return
       placeholder.empty()
       player_info = f"""
