@@ -4,6 +4,10 @@ from Generator import CynoGenerator
 
 async def main():
   gen_client = CynoGenerator(cwd=".")
+  try:
+    await gen_client.client.update_assets()
+  except:
+    pass
   if "player_info" not in st.session_state:
     st.session_state.player_info = False
 
