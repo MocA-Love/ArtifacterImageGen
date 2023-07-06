@@ -53,10 +53,10 @@ async def main():
         placeholder.empty()
         st.write("EnkaNetworkでエラーが発生しました。")
         return
-      #except Exception as e:
-      #  placeholder.empty()
-      #  st.write(f"プレイヤー情報の取得に失敗しました。{e}")
-      #  return
+      except Exception as e:
+        placeholder.empty()
+        st.write(f"プレイヤー情報の取得に失敗しました。{e}")
+        return
       placeholder.empty()
       player_info = f"""
 ### プレイヤー情報
