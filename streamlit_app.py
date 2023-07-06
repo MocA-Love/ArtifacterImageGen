@@ -2,6 +2,9 @@ import streamlit as st
 import asyncio
 from Generator import CynoGenerator
 from enkanetwork.exception import *
+import logging
+
+logger = logging.getLogger()
 
 async def main():
   gen_client = CynoGenerator(cwd=".")
@@ -52,7 +55,8 @@ async def main():
         return
       except Exception as e:
         placeholder.empty()
-        st.write(f"プレイヤー情報の取得に失敗しました。\nエラー: {e}")
+        st.write(f"プレイヤー情報の取得に失敗しました。エラー: {e}")
+        logger.exception(exc_info=e)
         return
       placeholder.empty()
       player_info = f"""
