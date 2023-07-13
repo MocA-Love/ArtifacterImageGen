@@ -188,7 +188,7 @@ class CynoGenerator:
         # 画像を保存する
         background.save(filename,"png")
 
-    def generation(self,character:CharacterInfo,score_type:str):
+    def generation(self,character:CharacterInfo,score_type:str,background_path:str = None):
         #config 
         element = character.element.name
         
@@ -260,7 +260,14 @@ class CynoGenerator:
         
         config_font = lambda size : ImageFont.truetype(f'{self.cwd}/Assets/ja-jp.ttf',size)
         
-        Base = Image.open(f'{self.cwd}/Base/{element}.png')
+        if background_path:
+            if background_path.startswith("http") or background_path.startswith("https"):
+                background = BytesIO(requests.get(background_path).content)
+            else:
+                background = background_path
+            Base = Image.open(background).resize((1920,1080)).convert("RGBA")
+        else:
+            Base = Image.open(f'{self.cwd}/Base/{element}.png')
         
         if (character.id == 10000005) or (character.id == 10000007):
             if not os.path.exists(self.cwd+"/cache/"+character.image.banner.filename+".png"):
