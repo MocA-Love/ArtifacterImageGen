@@ -188,7 +188,7 @@ class CynoGenerator:
         # 画像を保存する
         background.save(filename,"png")
 
-    def generation(self,character:CharacterInfo,score_type:str,background_path:str = None):
+    def generation(self,character:CharacterInfo,score_type:str,background_path:str):
         #config 
         element = character.element.name
         
