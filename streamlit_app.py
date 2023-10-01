@@ -3,15 +3,21 @@ import asyncio
 from Generator import CynoGenerator
 from enkanetwork.exception import *
 import logging
+import asyncio
 
 logger = logging.getLogger()
 
-async def main():
+@st.cache_resource
+async def on_start():
   gen_client = CynoGenerator(cwd=".")
   try:
     await gen_client.client.update_assets()
   except:
     pass
+
+
+async def main():
+  gen_client = CynoGenerator(cwd=".")
   if "player_info" not in st.session_state:
     st.session_state.player_info = False
   params = st.experimental_get_query_params()
@@ -25,6 +31,10 @@ async def main():
     page_icon="Assets/cyno.png",
     layout="wide"
   )
+  try:
+    await on_start()
+  except:
+    pass
   content = """
   # Web版Artifacter (CYNO-Builder)
   [![Twitter](https://img.shields.io/badge/Artifacter-%40ArtifacterBot-1DA1F2?logo=twitter&style=flat-square)](https://twitter.com/ArtifacterBot)
@@ -37,6 +47,7 @@ async def main():
   st.write(content,unsafe_allow_html=True)
 
   UID = st.text_input("UIDを入力",value=queryUID if queryUID else "")
+  queryUID = None
   if UID:
     st.experimental_set_query_params(uid=UID)
   if st.button("プレイヤー情報の取得", key="get_player_info",on_click=session_player) or st.session_state.player_info:
