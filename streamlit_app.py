@@ -14,6 +14,11 @@ async def main():
     pass
   if "player_info" not in st.session_state:
     st.session_state.player_info = False
+  params = st.experimental_get_query_params()
+  if params.get("uid"):
+    queryUID = params["uid"][0]
+  else:
+    queryUID = None
 
   st.set_page_config(
     page_title="CYNO-Builder on Web",
@@ -30,7 +35,8 @@ async def main():
   ※バグ報告はDiscordからお願いします
   """
   st.write(content,unsafe_allow_html=True)
-  UID = st.text_input("UIDを入力")
+
+  UID = st.text_input("UIDを入力",value=queryUID if queryUID else "")
   if st.button("プレイヤー情報の取得", key="get_player_info",on_click=session_player) or st.session_state.player_info:
       placeholder = st.empty()
       placeholder.write("プレイヤー情報を取得中...")
