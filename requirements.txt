@@ -1,4 +1,4 @@
 pydantic==1.10.11
 #-e git+https://github.com/0kq-github/EnkaNetwork.py.git#egg=enkanetwork.py
-enkanetwork.py
+enkanetwork.py==1.4.5
 pillow
