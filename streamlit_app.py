@@ -37,6 +37,8 @@ async def main():
   st.write(content,unsafe_allow_html=True)
 
   UID = st.text_input("UIDを入力",value=queryUID if queryUID else "")
+  if UID:
+    st.experimental_set_query_params(uid=UID)
   if st.button("プレイヤー情報の取得", key="get_player_info",on_click=session_player) or st.session_state.player_info:
       placeholder = st.empty()
       placeholder.write("プレイヤー情報を取得中...")
