@@ -29,8 +29,19 @@ async def main():
   st.set_page_config(
     page_title="CYNO-Builder on Web",
     page_icon="Assets/cyno.png",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
   )
+  st.markdown(
+    """
+<style>
+    [data-testid="collapsedControl"] {
+        display: none
+    }
+</style>
+""",
+    unsafe_allow_html=True,
+    )
   try:
     await on_start()
   except:
@@ -41,11 +52,11 @@ async def main():
   [![Twitter](https://img.shields.io/badge/開発者Twitter-%40__0kq__-1DA1F2?logo=twitter&style=flat-square)](https://twitter.com/_0kq_)
   [![Discord](https://img.shields.io/discord/972865249583702086?logo=Discord&label=Discord&style=flat-square)](https://discord.gg/9gPuaFWXzX)
   [![FANBOX](https://img.shields.io/badge/%E9%96%8B%E7%99%BA%E6%94%AF%E6%8F%B4-FANBOX-orange?style=flat-square)](https://net0kq.fanbox.cc/)
+  [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fartifacter-cyno.streamlit.app&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9%E6%95%B0&edge_flat=true)](https://hits.seeyoufarm.com)
   ##### 原神のUIDからビルドカードを生成できます  
   ※バグ報告はDiscordからお願いします
   """
   st.write(content,unsafe_allow_html=True)
-
   UID = st.text_input("UIDを入力",value=queryUID if queryUID else "")
   queryUID = None
   if UID:
