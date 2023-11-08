@@ -289,10 +289,7 @@ class CynoGenerator:
         
         CharacterPaste = Image.new("RGBA",Base.size,(255,255,255,0))
         
-        if CharacterName == "シャルロット":
-            CharacterPaste.paste(CharacterImage,(-250,-125),mask=CharacterAvatarMask)
-        else:
-            CharacterPaste.paste(CharacterImage,(-160,-45),mask=CharacterAvatarMask)
+        CharacterPaste.paste(CharacterImage,(-160,-45),mask=CharacterAvatarMask)
         Base = Image.alpha_composite(Base,CharacterPaste)
         Base = Image.alpha_composite(Base,Shadow)
         
