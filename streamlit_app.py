@@ -7,13 +7,6 @@ import asyncio
 
 logger = logging.getLogger()
 
-@st.cache_resource
-async def on_start():
-  gen_client = CynoGenerator(cwd=".")
-  try:
-    await gen_client.client.update_assets()
-  except:
-    pass
 
 
 async def main():
