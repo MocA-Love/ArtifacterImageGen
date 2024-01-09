@@ -8,7 +8,7 @@ from enkanetwork import EnkaNetworkAPI, CharacterInfo, CharacterSkill, Equipment
 from collections import Counter
 import base64
 
-from PIL import ImageFile 
+from PIL import ImageFile
 
 
 class CynoGenerator:
