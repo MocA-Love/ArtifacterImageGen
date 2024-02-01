@@ -274,7 +274,11 @@ class CynoGenerator:
                 self.resize_image(self.get_image(character.image.banner.filename,character.image.banner.url))
         CharacterImage = Image.open(self.get_image(character.image.banner.filename,character.image.banner.url)).convert("RGBA")                
         
-        
+        CharacterBack = Image.new('RGBA', (2048, 1024), (0, 0, 0, 0))
+        x = int((2048 - CharacterImage.width) / 2)
+        y = int((1024 - CharacterImage.height) / 2)
+        CharacterBack.paste(CharacterImage, (x, y))
+        CharacterImage = CharacterBack
         Shadow = Image.open(f'{self.cwd}/Assets/Shadow.png').resize(Base.size)
         CharacterImage = CharacterImage.crop((289,0,1728,1024))
         CharacterImage = CharacterImage.resize((int(CharacterImage.width*0.75), int(CharacterImage.height*0.75)))
