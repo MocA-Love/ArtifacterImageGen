@@ -13,9 +13,9 @@ async def main():
   gen_client = CynoGenerator(cwd=".")
   if "player_info" not in st.session_state:
     st.session_state.player_info = False
-  params = st.experimental_get_query_params()
+  params = st.query_params
   if params.get("uid"):
-    queryUID = params["uid"][0]
+    queryUID = params["uid"]
   else:
     queryUID = None
 
@@ -53,7 +53,7 @@ async def main():
   UID = st.text_input("UIDを入力",value=queryUID if queryUID else "")
   queryUID = None
   if UID:
-    st.experimental_set_query_params(uid=UID)
+    st.query_params["uid"] = UID
   if st.button("プレイヤー情報の取得", key="get_player_info",on_click=session_player) or st.session_state.player_info:
       placeholder = st.empty()
       placeholder.write("プレイヤー情報を取得中...")
