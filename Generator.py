@@ -27,24 +27,35 @@ class CynoGenerator(Config):
         self.client = EnkaNetworkAPI(lang="jp")
 
     def set_subop(self):
-        if not os.path.exists(self.cwd+"mapping/subop.json"):
-            resp = requests.get(
-                "https://raw.githubusercontent.com/Sycamore0/GenshinData/main/ExcelBinOutput/ReliquaryAffixExcelConfigData.json")
-            sub_stats_data = resp.json()
+        subop_path = f"{self.cwd}/mapping/subop.json"
 
-            result = {}
-            for i in sub_stats_data:
-                if not i["propType"] in result.keys():
-                    result[i["propType"]] = {}
-                key_1 = i["propType"]
-                key_2 = i["id"]
-                del i["id"]
-                del i["propType"]
-                result[key_1][key_2] = i
+        if os.path.exists(subop_path):
+            return self.read_json(subop_path)
 
-            self.write_json(result, self.cwd+"/mapping/subop.json")
-        result = self.read_json(self.cwd+"/mapping/subop.json")
+        # なにこれ
+        resp = requests.get(
+            "https://raw.githubusercontent.com/Sycamore0/GenshinData/main/ExcelBinOutput/ReliquaryAffixExcelConfigData.json"
+        )
+
+        sub_stats_data = resp.json()
+
+        result = {}
+        for entry in sub_stats_data:
+            prop_type = entry["propType"]
+            entry_id = entry["id"]
+
+            del entry["id"]
+            del entry["propType"]
+
+            if prop_type not in result:
+                result[prop_type] = {}
+
+            result[prop_type][entry_id] = entry
+
+        self.write_json(result, subop_path)
+
         return result
+
 
     def set_artifact(self, artifact: Equipments, score_type: str):
         score = 0.0
