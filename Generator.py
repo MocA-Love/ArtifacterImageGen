@@ -1,49 +1,30 @@
-from io import BytesIO
-from PIL import Image, ImageFont, ImageDraw, ImageEnhance
-import json
 import os
-import requests
-from typing import List
-from enkanetwork import EnkaNetworkAPI, CharacterInfo, CharacterSkill, Equipments, EquipmentsStats
-from collections import Counter
 import base64
+from io import BytesIO
+from collections import Counter
+from typing import List
 
-from PIL import ImageFile
+import requests
+from PIL import Image, ImageFont, ImageDraw, ImageEnhance, ImageFile
 
+from enkanetwork import EnkaNetworkAPI, CharacterInfo, CharacterSkill, Equipments, EquipmentsStats
 
-class CynoGenerator:
+from config import Config
+
+class CynoGenerator(Config):
     def __init__(self, cwd="./ArtifacterImageGen"):
-        ImageFile.LOAD_TRUNCATED_IMAGES = True
         self.cwd = cwd
-        self.status_prop = self.read_json(self.cwd+"/mapping/status_prop.json")
+
+        Config.__init__(self)
+
         self.subop = self.set_subop()
-        self.score_type_dict = {
-            "ATTACK": "攻撃力",
-            "HP": "HP",
-            "DEFENSE": "防御力",
-            "EFFICIENCY": "元素チャージ効率",
-            "ELEMENT": "元素熟知",
-        }
-        self.elements = {
-            "Pyro": "炎元素ダメージ",
-            "Electro": "雷元素ダメージ",
-            "Hydro": "水元素ダメージ",
-            "Dendro": "草元素ダメージ",
-            "Anemo": "風元素ダメージ",
-            "Geo": "岩元素ダメージ",
-            "Cryo": "氷元素ダメージ"
-        }
+
+        ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+        self.status_prop = self.read_json(f"{cwd}/mapping/status_prop.json")
+
         os.makedirs(self.cwd+"/cache", exist_ok=True)
         self.client = EnkaNetworkAPI(lang="jp")
-
-    def read_json(self, path):
-        with open(path, encoding="utf-8") as f:
-            data = json.load(f)
-        return data
-
-    def write_json(self, data, path):
-        with open(path, mode="w", encoding="utf-8") as f:
-            json.dump(data, f)
 
     def set_subop(self):
         if not os.path.exists(self.cwd+"mapping/subop.json"):
@@ -155,7 +136,7 @@ class CynoGenerator:
         if stats.FIGHT_PROP_HEAL_ADD.value > 0:
             result["与える治癒効果"] = round(stats.FIGHT_PROP_HEAL_ADD.value * 100, 1)
 
-        element = self.elements[c.element.name]
+        element = self.ELEMENT_MAP[c.element.name]
         if result.values():
             max_value = max(result.values())
             for k, v in sorted(result.items()):
@@ -164,19 +145,20 @@ class CynoGenerator:
                         return k, v
         else:
             return None, None
+
         max_value = max(result.values())
         for k, v in result.items():
             if v == max_value:
                 return k, v
 
-    def get_image(self, filename: str, url):
-        if os.path.exists(self.cwd+"/cache/"+filename+".png"):
-            return self.cwd+"/cache/"+filename+".png"
-        else:
-            resp = requests.get(url)
-            with open(self.cwd+"/cache/"+filename+".png", mode="wb") as f:
+    def get_image(self, filename: str, url: str) -> str:
+        path = f"{self.cwd}/cache/{filename}.png"
+        if not os.path.exists(path):
+            resp = requests.get(url, timeout=10)
+            with open(path, mode="wb") as f:
                 f.write(resp.content)
-            return self.cwd+"/cache/"+filename+".png"
+
+        return path
 
     def resize_image(self, filename):
         # 画像を読み込む
@@ -481,9 +463,9 @@ class CynoGenerator:
         ScoreLen = D.textlength(f"{ScoreTotal}", config_font(75))
         D.text((1652-ScoreLen//2, 420), str(ScoreTotal), font=config_font(75))
         blen = D.textlength(
-            f"{self.score_type_dict[ScoreCVBasis]}換算", font=config_font(24))
+            f"{self.SCORE_MAP[ScoreCVBasis]}換算", font=config_font(24))
         D.text((1867-blen, 585),
-               f"{self.score_type_dict[ScoreCVBasis]}換算", font=config_font(24))
+               f"{self.SCORE_MAP[ScoreCVBasis]}換算", font=config_font(24))
 
         if ScoreTotal >= 220:
             ScoreEv = Image.open(f"{self.cwd}/artifactGrades/SS.png")
@@ -662,12 +644,12 @@ class CynoGenerator:
         buffer = BytesIO()
         Base.save(buffer, "png")
         return buffer
-        # return pil_to_base64(Base,format="png")
+        # return pil_to_base64(Base)
 
 
-def pil_to_base64(img, format="jpeg"):
-    buffer = BytesIO()
-    img.save(buffer, format)
-    img_str = base64.b64encode(buffer.getvalue()).decode("ascii")
+def pil_to_base64(img: Image.Image, format: str = "png") -> str:
+    with BytesIO() as buffer:
+        img.save(buffer, format=format)
+        encoded_string = base64.b64encode(buffer.getvalue()).decode("ascii")
 
-    return img_str
+    return encoded_string
