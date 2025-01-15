@@ -115,48 +115,36 @@ class CynoGenerator(Config):
 
     def set_buff(self, c: CharacterInfo):
         result = {}
-        stats = c.stats
-        if stats.FIGHT_PROP_PHYSICAL_ADD_HURT.value > 0:
-            result["物理ダメージ"] = round(
-                stats.FIGHT_PROP_PHYSICAL_ADD_HURT.value * 100, 1)
-        if stats.FIGHT_PROP_FIRE_ADD_HURT.value > 0:
-            result["炎元素ダメージ"] = round(
-                stats.FIGHT_PROP_FIRE_ADD_HURT.value * 100, 1)
-        if stats.FIGHT_PROP_ELEC_ADD_HURT.value > 0:
-            result["雷元素ダメージ"] = round(
-                stats.FIGHT_PROP_ELEC_ADD_HURT.value * 100, 1)
-        if stats.FIGHT_PROP_WATER_ADD_HURT.value > 0:
-            result["水元素ダメージ"] = round(
-                stats.FIGHT_PROP_WATER_ADD_HURT.value * 100, 1)
-        if stats.FIGHT_PROP_GRASS_ADD_HURT.value > 0:
-            result["草元素ダメージ"] = round(
-                stats.FIGHT_PROP_GRASS_ADD_HURT.value * 100, 1)
-        if stats.FIGHT_PROP_WIND_ADD_HURT.value > 0:
-            result["風元素ダメージ"] = round(
-                stats.FIGHT_PROP_WIND_ADD_HURT.value * 100, 1)
-        if stats.FIGHT_PROP_ROCK_ADD_HURT.value > 0:
-            result["岩元素ダメージ"] = round(
-                stats.FIGHT_PROP_ROCK_ADD_HURT.value * 100, 1)
-        if stats.FIGHT_PROP_ICE_ADD_HURT.value > 0:
-            result["氷元素ダメージ"] = round(
-                stats.FIGHT_PROP_ICE_ADD_HURT.value * 100, 1)
-        if stats.FIGHT_PROP_HEAL_ADD.value > 0:
-            result["与える治癒効果"] = round(stats.FIGHT_PROP_HEAL_ADD.value * 100, 1)
 
-        element = self.ELEMENT_MAP[c.element.name]
-        if result.values():
+        element_buffs = {
+            "物理ダメージ": c.stats.FIGHT_PROP_PHYSICAL_ADD_HURT.value,
+            "炎元素ダメージ": c.stats.FIGHT_PROP_FIRE_ADD_HURT.value,
+            "雷元素ダメージ": c.stats.FIGHT_PROP_ELEC_ADD_HURT.value,
+            "水元素ダメージ": c.stats.FIGHT_PROP_WATER_ADD_HURT.value,
+            "草元素ダメージ": c.stats.FIGHT_PROP_GRASS_ADD_HURT.value,
+            "風元素ダメージ": c.stats.FIGHT_PROP_WIND_ADD_HURT.value,
+            "岩元素ダメージ": c.stats.FIGHT_PROP_ROCK_ADD_HURT.value,
+            "氷元素ダメージ": c.stats.FIGHT_PROP_ICE_ADD_HURT.value,
+            "与える治癒効果": c.stats.FIGHT_PROP_HEAL_ADD.value
+        }
+
+        # 0より大きい場合のみ
+        for buff_name, value in element_buffs.items():
+            if value > 0:
+                result[buff_name] = round(value * 100, 1)
+
+        # 最大値を探す ← 原神の計算方法がいまいちわからないのであとで解析
+        if result:
             max_value = max(result.values())
+            element = self.ELEMENT_MAP[c.element.name]
             for k, v in sorted(result.items()):
                 if v == max_value:
                     if k == element:
                         return k, v
-        else:
-            return None, None
 
-        max_value = max(result.values())
-        for k, v in result.items():
-            if v == max_value:
-                return k, v
+            return max(result.items(), key=lambda x: x[1])
+
+        return None, None
 
     def get_image(self, filename: str, url: str) -> str:
         path = f"{self.cwd}/cache/{filename}.png"
