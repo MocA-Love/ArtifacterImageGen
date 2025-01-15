@@ -37,12 +37,12 @@ class CynoGenerator:
         self.client = EnkaNetworkAPI(lang="jp")
 
     def read_json(self, path):
-        with open(path, encoding='utf-8') as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
         return data
 
     def write_json(self, data, path):
-        with open(path, mode="w", encoding='utf-8') as f:
+        with open(path, mode="w", encoding="utf-8") as f:
             json.dump(data, f)
 
     def set_subop(self):
@@ -189,7 +189,7 @@ class CynoGenerator:
         resized_image = image.resize((new_width, new_height))
 
         # 透明な背景の新しい画像を作成する
-        background = Image.new('RGBA', (2048, 1200), (0, 0, 0, 0))
+        background = Image.new("RGBA", (2048, 1200), (0, 0, 0, 0))
 
         # リサイズした画像を中央に配置する
         x = int((2048 - new_width) / 2)
@@ -203,7 +203,7 @@ class CynoGenerator:
         # config
         element = character.element.name
 
-        # CharacterData :dict = data.get('Character')
+        # CharacterData :dict = data.get("Character")
         CharacterName: str = character.name
         CharacterConstellations: int = character.constellations_unlocked
         CharacterLevel: int = character.level
@@ -275,7 +275,7 @@ class CynoGenerator:
         ScoreTotal = round(ScoreTotal, 1)
 
         def config_font(size): return ImageFont.truetype(
-            f'{self.cwd}/Assets/ja-jp.ttf', size)
+            f"{self.cwd}/Assets/ja-jp.ttf", size)
 
         if background_path:
             if background_path.startswith("http") or background_path.startswith("https"):
@@ -284,7 +284,7 @@ class CynoGenerator:
                 background = background_path
             Base = Image.open(background).resize((1920, 1080)).convert("RGBA")
         else:
-            Base = Image.open(f'{self.cwd}/Base/{element}.png')
+            Base = Image.open(f"{self.cwd}/Base/{element}.png")
 
         if (character.id == 10000005) or (character.id == 10000007):
             if not os.path.exists(self.cwd+"/cache/"+character.image.banner.filename+".png"):
@@ -293,24 +293,24 @@ class CynoGenerator:
         CharacterImage = Image.open(self.get_image(
             character.image.banner.filename, character.image.banner.url)).convert("RGBA")
 
-        CharacterBack = Image.new('RGBA', (2048, 1024), (0, 0, 0, 0))
+        CharacterBack = Image.new("RGBA", (2048, 1024), (0, 0, 0, 0))
         x = int((2048 - CharacterImage.width) / 2)
         y = int((1024 - CharacterImage.height) / 2)
         CharacterBack.paste(CharacterImage, (x, y))
         CharacterImage = CharacterBack
-        Shadow = Image.open(f'{self.cwd}/Assets/Shadow.png').resize(Base.size)
+        Shadow = Image.open(f"{self.cwd}/Assets/Shadow.png").resize(Base.size)
         CharacterImage = CharacterImage.crop((289, 0, 1728, 1024))
         CharacterImage = CharacterImage.resize(
             (int(CharacterImage.width*0.75), int(CharacterImage.height*0.75)))
 
         CharacterAvatarMask = CharacterImage.copy()
 
-        if CharacterName in ['アルハイゼン', 'ヌヴィレット']:
+        if CharacterName in ["アルハイゼン", "ヌヴィレット"]:
             CharacterAvatarMask2 = Image.open(
-                f'{self.cwd}/Assets/Alhaitham.png').convert('L').resize(CharacterImage.size)
+                f"{self.cwd}/Assets/Alhaitham.png").convert("L").resize(CharacterImage.size)
         else:
             CharacterAvatarMask2 = Image.open(
-                f'{self.cwd}/Assets/CharacterMask.png').convert('L').resize(CharacterImage.size)
+                f"{self.cwd}/Assets/CharacterMask.png").convert("L").resize(CharacterImage.size)
         CharacterImage.putalpha(CharacterAvatarMask2)
 
         CharacterPaste = Image.new("RGBA", Base.size, (255, 255, 255, 0))
@@ -331,7 +331,7 @@ class CynoGenerator:
         Base = Image.alpha_composite(Base, WeaponPaste)
 
         WeaponRImage = Image.open(
-            f'{self.cwd}/Assets/Rarelity/{WeaponRarity}.png').convert("RGBA")
+            f"{self.cwd}/Assets/Rarelity/{WeaponRarity}.png").convert("RGBA")
         WeaponRImage = WeaponRImage.resize(
             (int(WeaponRImage.width*0.97), int(WeaponRImage.height*0.97)))
         WeaponRPaste = Image.new("RGBA", Base.size, (255, 255, 255, 0))
@@ -341,7 +341,7 @@ class CynoGenerator:
         Base = Image.alpha_composite(Base, WeaponRPaste)
 
         # 天賦
-        TalentBase = Image.open(f'{self.cwd}/Assets/TalentBack.png')
+        TalentBase = Image.open(f"{self.cwd}/Assets/TalentBack.png")
         TalentBasePaste = Image.new("RGBA", Base.size, (255, 255, 255, 0))
         TalentBase = TalentBase.resize(
             (int(TalentBase.width/1.5), int(TalentBase.height/1.5)))
@@ -350,7 +350,7 @@ class CynoGenerator:
             TalentPaste = Image.new(
                 "RGBA", TalentBase.size, (255, 255, 255, 0))
             Talent = Image.open(self.get_image(
-                character.skills[i].icon.filename, character.skills[i].icon.url)).resize((50, 50)).convert('RGBA')
+                character.skills[i].icon.filename, character.skills[i].icon.url)).resize((50, 50)).convert("RGBA")
             TalentMask = Talent.copy()
             TalentPaste.paste(Talent, (TalentPaste.width//2-25,
                               TalentPaste.height//2-25), mask=TalentMask)
@@ -362,9 +362,9 @@ class CynoGenerator:
 
         # 凸
         CBase = Image.open(
-            f'{self.cwd}/命の星座/{element}.png').resize((90, 90)).convert('RGBA')
+            f"{self.cwd}/命の星座/{element}.png").resize((90, 90)).convert("RGBA")
         Clock = Image.open(
-            f'{self.cwd}/命の星座/{element}LOCK.png').resize((90, 90)).convert('RGBA')
+            f"{self.cwd}/命の星座/{element}LOCK.png").resize((90, 90)).convert("RGBA")
         ClockMask = Clock.copy()
 
         CPaste = Image.new("RGBA", Base.size, (255, 255, 255, 0))
@@ -395,19 +395,19 @@ class CynoGenerator:
             D.rounded_rectangle(
                 (35+levellength+5, 74, 77+levellength+friendshiplength, 102), radius=2, fill="black")
             FriendShipIcon = Image.open(
-                f'{self.cwd}/Assets/Love.png').convert("RGBA")
+                f"{self.cwd}/Assets/Love.png").convert("RGBA")
             FriendShipIcon = FriendShipIcon.resize(
                 (int(FriendShipIcon.width*(24/FriendShipIcon.height)), 24))
             Fmask = FriendShipIcon.copy()
             Base.paste(FriendShipIcon, (42+int(levellength), 76), mask=Fmask)
             D.text((73+levellength, 74), str(FriendShip), font=config_font(25))
 
-        D.text((42, 397), f'Lv.{CharacterTalent[0].level}', font=config_font(
-            17), fill='aqua' if CharacterTalent[0].level >= 10 else None)
-        D.text((42, 502), f'Lv.{CharacterTalent[1].level}', font=config_font(
-            17), fill='aqua' if CharacterTalent[1].level >= 10 else None)
-        D.text((42, 607), f'Lv.{CharacterTalent[2].level}', font=config_font(
-            17), fill='aqua' if CharacterTalent[2].level >= 10 else None)
+        D.text((42, 397), f"Lv.{CharacterTalent[0].level}", font=config_font(
+            17), fill="aqua" if CharacterTalent[0].level >= 10 else None)
+        D.text((42, 502), f"Lv.{CharacterTalent[1].level}", font=config_font(
+            17), fill="aqua" if CharacterTalent[1].level >= 10 else None)
+        D.text((42, 607), f"Lv.{CharacterTalent[2].level}", font=config_font(
+            17), fill="aqua" if CharacterTalent[2].level >= 10 else None)
 
         def genbasetext(state):
             sumv = CharacterStatus[state]
@@ -415,20 +415,20 @@ class CynoGenerator:
             basev = CharacterBase[state]
             return f"+{format(plusv,',')}", f"{format(basev,',')}", D.textlength(f"+{format(plusv,',')}", font=config_font(12)), D.textlength(f"{format(basev,',')}", font=config_font(12))
 
-        disper = ['会心率', '会心ダメージ', '攻撃パーセンテージ', '防御パーセンテージ', 'HPパーセンテージ', '水元素ダメージ', '物理ダメージ', '風元素ダメージ',
-                  '岩元素ダメージ', '炎元素ダメージ', '与える治癒効果', '与える治療効果', '雷元素ダメージ', '氷元素ダメージ', '草元素ダメージ', '与える治癒効果', '元素チャージ効率']
-        StateOP = ('HP', '攻撃力', "防御力", "元素熟知", "会心率", "会心ダメージ", "元素チャージ効率")
+        disper = ["会心率", "会心ダメージ", "攻撃パーセンテージ", "防御パーセンテージ", "HPパーセンテージ", "水元素ダメージ", "物理ダメージ", "風元素ダメージ",
+                  "岩元素ダメージ", "炎元素ダメージ", "与える治癒効果", "与える治療効果", "雷元素ダメージ", "氷元素ダメージ", "草元素ダメージ", "与える治癒効果", "元素チャージ効率"]
+        StateOP = ("HP", "攻撃力", "防御力", "元素熟知", "会心率", "会心ダメージ", "元素チャージ効率")
         for k, v in CharacterStatus.items():
-            if k in ['氷元素ダメージ', '水元素ダメージ', '岩元素ダメージ', '草元素ダメージ', '風元素ダメージ', '炎元素ダメージ', '物理ダメージ', '与える治癒効果', '雷元素ダメージ'] and v == 0:
-                k = f'{element}元素ダメージ'
+            if k in ["氷元素ダメージ", "水元素ダメージ", "岩元素ダメージ", "草元素ダメージ", "風元素ダメージ", "炎元素ダメージ", "物理ダメージ", "与える治癒効果", "雷元素ダメージ"] and v == 0:
+                k = f"{element}元素ダメージ"
             try:
                 i = StateOP.index(k)
             except:
                 i = 7
                 D.text((844, 67+i*70), k, font=config_font(26))
                 opicon = Image.open(
-                    f'{self.cwd}/emotes/{k}.png').resize((40, 40))
-                oppaste = Image.new('RGBA', Base.size, (255, 255, 255, 0))
+                    f"{self.cwd}/emotes/{k}.png").resize((40, 40))
+                oppaste = Image.new("RGBA", Base.size, (255, 255, 255, 0))
                 opmask = opicon.copy()
                 oppaste.paste(opicon, (789, 65+i*70))
                 Base = Image.alpha_composite(Base, oppaste)
@@ -439,11 +439,11 @@ class CynoGenerator:
                 D.text((1360-statelen, 67+i*70),
                        format(v, ","), font=config_font(26))
             else:
-                statelen = D.textlength(f'{float(v)}%', config_font(26))
+                statelen = D.textlength(f"{float(v)}%", config_font(26))
                 D.text((1360-statelen, 67+i*70),
-                       f'{float(v)}%', font=config_font(26))
+                       f"{float(v)}%", font=config_font(26))
 
-            if k in ['HP', '防御力', '攻撃力']:
+            if k in ["HP", "防御力", "攻撃力"]:
                 HPpls, HPbase, HPsize, HPbsize = genbasetext(k)
                 D.text((1360-HPsize, 97+i*70), HPpls,
                        fill=(0, 255, 0, 180), font=config_font(12))
@@ -451,15 +451,15 @@ class CynoGenerator:
                        font=config_font(12), fill=(255, 255, 255, 180))
 
         D.text((1582, 47), WeaponName, font=config_font(26))
-        wlebellen = D.textlength(f'Lv.{WeaponLevel}', font=config_font(24))
+        wlebellen = D.textlength(f"Lv.{WeaponLevel}", font=config_font(24))
         D.rounded_rectangle((1582, 80, 1582+wlebellen+4,
-                            108), radius=1, fill='black')
-        D.text((1584, 82), f'Lv.{WeaponLevel}', font=config_font(24))
+                            108), radius=1, fill="black")
+        D.text((1584, 82), f"Lv.{WeaponLevel}", font=config_font(24))
 
-        BaseAtk = Image.open(f'{self.cwd}/emotes/基礎攻撃力.png').resize((23, 23))
+        BaseAtk = Image.open(f"{self.cwd}/emotes/基礎攻撃力.png").resize((23, 23))
         BaseAtkmask = BaseAtk.copy().convert("RGBA")
         Base.paste(BaseAtk, (1600, 120), mask=BaseAtkmask)
-        D.text((1623, 120), f'基礎攻撃力  {WeaponBaseATK}', font=config_font(23))
+        D.text((1623, 120), f"基礎攻撃力  {WeaponBaseATK}", font=config_font(23))
 
         optionmap = {
             "攻撃パーセンテージ": "攻撃%",
@@ -469,30 +469,30 @@ class CynoGenerator:
         }
         if WeaponSubOPKey != None:
             BaseAtk = Image.open(
-                f'{self.cwd}/emotes/{WeaponSubOPKey}.png').resize((23, 23))
+                f"{self.cwd}/emotes/{WeaponSubOPKey}.png").resize((23, 23))
             BaseAtkmask = BaseAtk.copy().convert("RGBA")
             Base.paste(BaseAtk, (1600, 155), mask=BaseAtkmask)
 
-            D.text((1623, 155), f'{optionmap.get(WeaponSubOPKey) or WeaponSubOPKey}  {str(WeaponSubOPValue)+"%" if isinstance(WeaponSubOPValue,float) else format(WeaponSubOPValue,",")}', font=config_font(23))
+            D.text((1623, 155), f"{optionmap.get(WeaponSubOPKey) or WeaponSubOPKey}  {str(WeaponSubOPValue)+'%' if isinstance(WeaponSubOPValue,float) else format(WeaponSubOPValue,',')}", font=config_font(23))
 
-        D.rounded_rectangle((1430, 45, 1470, 70), radius=1, fill='black')
-        D.text((1433, 46), f'R{WeaponRank}', font=config_font(24))
+        D.rounded_rectangle((1430, 45, 1470, 70), radius=1, fill="black")
+        D.text((1433, 46), f"R{WeaponRank}", font=config_font(24))
 
-        ScoreLen = D.textlength(f'{ScoreTotal}', config_font(75))
+        ScoreLen = D.textlength(f"{ScoreTotal}", config_font(75))
         D.text((1652-ScoreLen//2, 420), str(ScoreTotal), font=config_font(75))
         blen = D.textlength(
-            f'{self.score_type_dict[ScoreCVBasis]}換算', font=config_font(24))
+            f"{self.score_type_dict[ScoreCVBasis]}換算", font=config_font(24))
         D.text((1867-blen, 585),
-               f'{self.score_type_dict[ScoreCVBasis]}換算', font=config_font(24))
+               f"{self.score_type_dict[ScoreCVBasis]}換算", font=config_font(24))
 
         if ScoreTotal >= 220:
-            ScoreEv = Image.open(f'{self.cwd}/artifactGrades/SS.png')
+            ScoreEv = Image.open(f"{self.cwd}/artifactGrades/SS.png")
         elif ScoreTotal >= 200:
-            ScoreEv = Image.open(f'{self.cwd}/artifactGrades/S.png')
+            ScoreEv = Image.open(f"{self.cwd}/artifactGrades/S.png")
         elif ScoreTotal >= 180:
-            ScoreEv = Image.open(f'{self.cwd}/artifactGrades/A.png')
+            ScoreEv = Image.open(f"{self.cwd}/artifactGrades/A.png")
         else:
-            ScoreEv = Image.open(f'{self.cwd}/artifactGrades/B.png')
+            ScoreEv = Image.open(f"{self.cwd}/artifactGrades/B.png")
 
         ScoreEv = ScoreEv.resize((ScoreEv.width//8, ScoreEv.height//8))
         EvMask = ScoreEv.copy()
@@ -501,13 +501,13 @@ class CynoGenerator:
 
         # 聖遺物
         atftype = list()
-        for i, parts in enumerate(['flower', "wing", "clock", "cup", "crown"]):
+        for i, parts in enumerate(["flower", "wing", "clock", "cup", "crown"]):
             details = ArtifactsData.get(parts)
 
             if not details:
                 continue
-            atftype.append(details['type'])
-            PreviewPaste = Image.new('RGBA', Base.size, (255, 255, 255, 0))
+            atftype.append(details["type"])
+            PreviewPaste = Image.new("RGBA", Base.size, (255, 255, 255, 0))
             Preview = Image.open(details["filename"]).resize((256, 256))
             enhancer = ImageEnhance.Brightness(Preview)
             Preview = enhancer.enhance(0.6)
@@ -516,76 +516,76 @@ class CynoGenerator:
             Pmask1 = Preview.copy()
 
             Pmask = Image.open(
-                f'{self.cwd}/Assets/ArtifactMask.png').convert('L').resize(Preview.size)
+                f"{self.cwd}/Assets/ArtifactMask.png").convert("L").resize(Preview.size)
             Preview.putalpha(Pmask)
-            if parts in ['flower', 'crown']:
+            if parts in ["flower", "crown"]:
                 PreviewPaste.paste(Preview, (-37+373*i, 570), mask=Pmask1)
-            elif parts in ['wing', 'cup']:
+            elif parts in ["wing", "cup"]:
                 PreviewPaste.paste(Preview, (-36+373*i, 570), mask=Pmask1)
             else:
                 PreviewPaste.paste(Preview, (-35+373*i, 570), mask=Pmask1)
             Base = Image.alpha_composite(Base, PreviewPaste)
             D = ImageDraw.Draw(Base)
 
-            mainop = details['main']['option']
+            mainop = details["main"]["option"]
 
             mainoplen = D.textlength(optionmap.get(
                 mainop) or mainop, font=config_font(29))
             D.text((375+i*373-int(mainoplen), 655),
                    optionmap.get(mainop) or mainop, font=config_font(29))
             MainIcon = Image.open(
-                f'{self.cwd}/emotes/{mainop}.png').convert("RGBA").resize((35, 35))
+                f"{self.cwd}/emotes/{mainop}.png").convert("RGBA").resize((35, 35))
             MainMask = MainIcon.copy()
             Base.paste(MainIcon, (340+i*373-int(mainoplen), 655), mask=MainMask)
 
-            mainv = details['main']['value']
+            mainv = details["main"]["value"]
             if mainop in disper:
-                mainvsize = D.textlength(f'{float(mainv)}%', config_font(49))
+                mainvsize = D.textlength(f"{float(mainv)}%", config_font(49))
                 D.text((375+i*373-mainvsize, 690),
-                       f'{float(mainv)}%', font=config_font(49))
+                       f"{float(mainv)}%", font=config_font(49))
             else:
                 mainvsize = D.textlength(format(mainv, ","), config_font(49))
                 D.text((375+i*373-mainvsize, 690),
                        format(mainv, ","), font=config_font(49))
-            levlen = D.textlength(f'+{details["Level"]}', config_font(21))
+            levlen = D.textlength(f"+{details['Level']}", config_font(21))
             D.rounded_rectangle(
-                (373+i*373-int(levlen), 748, 375+i*373, 771), fill='black', radius=2)
+                (373+i*373-int(levlen), 748, 375+i*373, 771), fill="black", radius=2)
             D.text((374+i*373-levlen, 749),
-                   f'+{details["Level"]}', font=config_font(21))
+                   f"+{details['Level']}", font=config_font(21))
 
-            if len(details['sub']) == 0:
+            if len(details["sub"]) == 0:
                 continue
 
-            for a, sub in enumerate(details['sub']):
-                SubOP = sub['option']
-                SubVal = sub['value']
+            for a, sub in enumerate(details["sub"]):
+                SubOP = sub["option"]
+                SubVal = sub["value"]
                 SubVals = sub["values"]
-                if SubOP in ['HP', '攻撃力', '防御力']:
+                if SubOP in ["HP", "攻撃力", "防御力"]:
                     D.text((79+373*i, 811+50*a), optionmap.get(SubOP) or SubOP,
                            font=config_font(25), fill=(255, 255, 255, 190))
                 else:
                     D.text((79+373*i, 811+50*a), optionmap.get(SubOP)
                            or SubOP, font=config_font(25))
                 SubIcon = Image.open(
-                    f'{self.cwd}/emotes/{SubOP}.png').resize((30, 30))
+                    f"{self.cwd}/emotes/{SubOP}.png").resize((30, 30))
                 SubMask = SubIcon.copy().convert("RGBA")
                 Base.paste(SubIcon, (44+373*i, 811+50*a), mask=SubMask)
                 if SubOP in disper:
                     SubSize = D.textlength(
-                        f'{float(SubVal)}%', config_font(25))
+                        f"{float(SubVal)}%", config_font(25))
                     D.text((375+i*373-SubSize, 811+50*a),
-                           f'{float(SubVal)}%', font=config_font(25))
+                           f"{float(SubVal)}%", font=config_font(25))
                 else:
                     SubSize = D.textlength(
                         format(SubVal, ","), config_font(25))
-                    if SubOP in ['防御力', '攻撃力', 'HP']:
+                    if SubOP in ["防御力", "攻撃力", "HP"]:
                         D.text((375+i*373-SubSize, 811+50*a), format(SubVal, ","),
                                font=config_font(25), fill=(255, 255, 255, 190))
                     else:
                         D.text((375+i*373-SubSize, 811+50*a), format(SubVal,
                                ","), font=config_font(25), fill=(255, 255, 255))
 
-                if details['Level'] == 20 and details['rarelity'] == 5:
+                if details["Level"] == 20 and details["rarelity"] == 5:
                     nobi = D.textlength(
                         "+".join(map(str, SubVals)), font=config_font(11))
                     D.text((375+i*373-nobi, 840+50*a), "+".join(map(str, SubVals)),
@@ -595,7 +595,7 @@ class CynoGenerator:
             ATFScorelen = D.textlength(str(Score), config_font(36))
             D.text((380+i*373-ATFScorelen, 1016),
                    str(Score), font=config_font(36))
-            D.text((295+i*373-ATFScorelen, 1025), 'Score',
+            D.text((295+i*373-ATFScorelen, 1025), "Score",
                    font=config_font(27), fill=(160, 160, 160))
 
             PointRefer = {
@@ -631,14 +631,14 @@ class CynoGenerator:
                 }
             }
 
-            if Score >= PointRefer[parts]['SS']:
-                ScoreImage = Image.open(f'{self.cwd}/artifactGrades/SS.png')
-            elif Score >= PointRefer[parts]['S']:
-                ScoreImage = Image.open(f'{self.cwd}/artifactGrades/S.png')
-            elif Score >= PointRefer[parts]['A']:
-                ScoreImage = Image.open(f'{self.cwd}/artifactGrades/A.png')
+            if Score >= PointRefer[parts]["SS"]:
+                ScoreImage = Image.open(f"{self.cwd}/artifactGrades/SS.png")
+            elif Score >= PointRefer[parts]["S"]:
+                ScoreImage = Image.open(f"{self.cwd}/artifactGrades/S.png")
+            elif Score >= PointRefer[parts]["A"]:
+                ScoreImage = Image.open(f"{self.cwd}/artifactGrades/A.png")
             else:
-                ScoreImage = Image.open(f'{self.cwd}/artifactGrades/B.png')
+                ScoreImage = Image.open(f"{self.cwd}/artifactGrades/B.png")
 
             ScoreImage = ScoreImage.resize(
                 (ScoreImage.width//11, ScoreImage.height//11))
@@ -652,17 +652,17 @@ class CynoGenerator:
                 D.text((1536, 243+i*35), n, fill=(0, 255, 0),
                        font=config_font(23))
                 D.rounded_rectangle(
-                    (1818, 243+i*35, 1862, 266+i*35), 1, 'black')
+                    (1818, 243+i*35, 1862, 266+i*35), 1, "black")
                 D.text((1835, 243+i*35), str(q), font=config_font(19))
             if len(SetBounus) == 1:
                 D.text((1536, 263), n, fill=(0, 255, 0), font=config_font(23))
-                D.rounded_rectangle((1818, 263, 1862, 288), 1, 'black')
+                D.rounded_rectangle((1818, 263, 1862, 288), 1, "black")
                 D.text((1831, 265), str(q), font=config_font(19))
 
         buffer = BytesIO()
         Base.save(buffer, "png")
         return buffer
-        # return pil_to_base64(Base,format='png')
+        # return pil_to_base64(Base,format="png")
 
 
 def pil_to_base64(img, format="jpeg"):
