@@ -11,6 +11,7 @@ from enkanetwork import EnkaNetworkAPI, CharacterInfo, CharacterSkill, Equipment
 
 from config import Config
 
+
 class CynoGenerator(Config):
     def __init__(self, cwd="./ArtifacterImageGen"):
         self.cwd = cwd
@@ -56,9 +57,9 @@ class CynoGenerator(Config):
 
         return result
 
-
     def set_artifact(self, artifact: Equipments, score_type: str):
         score = 0.0
+
         result = {
             "type": artifact.detail.artifact_name_set,
             "Level": artifact.level,
@@ -69,52 +70,47 @@ class CynoGenerator(Config):
             },
             "sub": []
         }
-        if artifact.detail.mainstats.prop_id in ["FIGHT_PROP_ELEMENT_MASTERY", "FIGHT_PROP_HP", "FIGHT_PROP_ATTACK", "FIGHT_PROP_DEFENSE"]:
-            result["main"]["value"] = int(artifact.detail.mainstats.value)
+
+        # ?1
+        main_stat = artifact.detail.mainstats
+        if main_stat.prop_id in self.MAIN_STATS_PROPS:
+            result["main"]["value"] = int(main_stat.value)
         else:
-            result["main"]["value"] = artifact.detail.mainstats.value
+            result["main"]["value"] = main_stat.value
+
+        # ?2
         for sub_stat in artifact.detail.substats:
             stat = {
                 "option": self.status_prop[sub_stat.prop_id],
+                "value": sub_stat.value if sub_stat.prop_id not in self.MAIN_STATS_PROPS else round(sub_stat.value),
+                "values": []
             }
-            if sub_stat.prop_id in ["FIGHT_PROP_ELEMENT_MASTERY", "FIGHT_PROP_HP", "FIGHT_PROP_ATTACK", "FIGHT_PROP_DEFENSE"]:
-                stat["value"] = round(sub_stat.value)
-            else:
-                stat["value"] = sub_stat.value
-            match sub_stat.prop_id:
-                case "FIGHT_PROP_CRITICAL":
-                    score += (sub_stat.value * 2)
-                case "FIGHT_PROP_CRITICAL_HURT":
+
+            # スコア計算?
+            if sub_stat.prop_id in self.SCORE_MODIFIERS:
+                score += sub_stat.value * \
+                    self.SCORE_MODIFIERS[sub_stat.prop_id]
+
+            # 追加スコア計算?
+            if sub_stat.prop_id in self.PERCENT_STATS.values():
+                if score_type in self.PERCENT_STATS and sub_stat.prop_id == self.PERCENT_STATS[score_type]:
                     score += sub_stat.value
-            match score_type:
-                case "HP":
-                    if sub_stat.prop_id == "FIGHT_PROP_HP_PERCENT":
-                        score += sub_stat.value
-                case "ATTACK":
-                    if sub_stat.prop_id == "FIGHT_PROP_ATTACK_PERCENT":
-                        score += sub_stat.value
-                case "DEFENSE":
-                    if sub_stat.prop_id == "FIGHT_PROP_DEFENSE_PERCENT":
-                        score += sub_stat.value
-                case "EFFICIENCY":
-                    if sub_stat.prop_id == "FIGHT_PROP_CHARGE_EFFICIENCY":
-                        score += sub_stat.value
-                case "ELEMENT":
-                    if sub_stat.prop_id == "FIGHT_PROP_ELEMENT_MASTERY":
-                        score += (sub_stat.value * 0.25)
-            if not "values" in stat.keys():
-                stat["values"] = []
+            elif sub_stat.prop_id == "FIGHT_PROP_ELEMENT_MASTERY" and score_type == "ELEMENT":
+                score += sub_stat.value * 0.25
+
+            # サブオプションとは?
             for i in artifact.props:
                 if str(i.id) in self.subop[sub_stat.prop_id].keys():
-                    if sub_stat.prop_id in ["FIGHT_PROP_ELEMENT_MASTERY", "FIGHT_PROP_HP", "FIGHT_PROP_ATTACK", "FIGHT_PROP_DEFENSE"]:
-                        stat["values"].append(
-                            round(self.subop[sub_stat.prop_id][str(i.id)]["propValue"]))
+                    value = self.subop[sub_stat.prop_id][str(
+                        i.id)]["propValue"]
+                    if sub_stat.prop_id in self.MAIN_STATS_PROPS:
+                        stat["values"].append(round(value))
                     else:
-                        stat["values"].append(
-                            round(self.subop[sub_stat.prop_id][str(i.id)]["propValue"]*100, 1))
-            stat["values"].sort()
+                        stat["values"].append(round(value * 100, 1))
 
+            stat["values"].sort()
             result["sub"].append(stat)
+
         return result, round(score, 1)
 
     def set_buff(self, c: CharacterInfo):

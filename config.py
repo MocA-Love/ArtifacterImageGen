@@ -20,6 +20,20 @@ class Config(object):
         "Cryo": "氷元素ダメージ"
     }
 
+    MAIN_STATS_PROPS = ["FIGHT_PROP_ELEMENT_MASTERY",
+                        "FIGHT_PROP_HP", "FIGHT_PROP_ATTACK", "FIGHT_PROP_DEFENSE"]
+    SCORE_MODIFIERS = {
+        "FIGHT_PROP_CRITICAL": 2,
+        "FIGHT_PROP_CRITICAL_HURT": 1
+    }
+    PERCENT_STATS = {
+        "HP": "FIGHT_PROP_HP_PERCENT",
+        "ATTACK": "FIGHT_PROP_ATTACK_PERCENT",
+        "DEFENSE": "FIGHT_PROP_DEFENSE_PERCENT",
+        "EFFICIENCY": "FIGHT_PROP_CHARGE_EFFICIENCY",
+        "ELEMENT": "FIGHT_PROP_ELEMENT_MASTERY"
+    }
+
     def __init__(self):
         pass
 
