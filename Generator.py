@@ -155,25 +155,23 @@ class CynoGenerator(Config):
 
         return path
 
-    def resize_image(self, filename):
-        # 画像を読み込む
+    def resize_image(self, filename, target_h=1200):
+        # なぜこのサイズにこだわっているかは後で考える
         image = Image.open(filename)
 
+        w, h = image.size
+
         # 縦横比を保ったまま、縦の長さが1200ピクセルになるようにリサイズする
-        width, height = image.size
-        new_height = 1200
-        new_width = int(width * new_height / height)
-        resized_image = image.resize((new_width, new_height))
+        target_w = int(w * target_h / h)
+        resized_image = image.resize((target_w, target_h))
 
         # 透明な背景の新しい画像を作成する
         background = Image.new("RGBA", (2048, 1200), (0, 0, 0, 0))
 
         # リサイズした画像を中央に配置する
-        x = int((2048 - new_width) / 2)
-        y = int((1200 - new_height) / 2)
+        x, y = int((2048 - target_w) / 2), int((1200 - target_h) / 2)
         background.paste(resized_image, (x, y))
 
-        # 画像を保存する
         background.save(filename, "png")
 
     def generation(self, character: CharacterInfo, score_type: str, background_path: str):
