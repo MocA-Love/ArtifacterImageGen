@@ -33,7 +33,6 @@ async def main():
     #print(characters[list(characters)[0]])
 
     client.generation(characters[list(characters)[0]], score_types[score_type], None)
-    client.generation(characters[list(characters)[0]], score_types[score_type], None, True)
 
     # アセットの更新
     #await client.update_assets()
