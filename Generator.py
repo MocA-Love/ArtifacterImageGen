@@ -283,7 +283,6 @@ class CynoGenerator(Config):
             elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CHARGE_EFFICIENCY:
                 er = round(stat.value * 100, 1)
 
-
         CharacterStatus: dict = {
             "HP": hp,
             "攻撃力": atk,
