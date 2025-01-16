@@ -4,3 +4,4 @@ venv
 mapping/subop.json
 pages/*
 test.png
+.enka_py/
