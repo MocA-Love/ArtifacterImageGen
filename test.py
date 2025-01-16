@@ -33,9 +33,12 @@ async def main():
     #print(characters[list(characters)[0]])
 
     client.generation(characters[list(characters)[0]], score_types[score_type], None)
+    client.generation(characters[list(characters)[0]], score_types[score_type], None, True)
+
+    # アセットの更新
+    #await client.update_assets()
 
     await client.client.close()
 
 if __name__ == "__main__":
-    loop = asyncio.new_event_loop()
-    loop.run_until_complete(main())
+    asyncio.run(main())

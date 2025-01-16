@@ -23,10 +23,12 @@ from config import Config
 class CynoGenerator(Config):
     def __init__(self, cwd="./ArtifacterImageGen"):
         self.cwd = cwd
+        self.rounded = False
 
         Config.__init__(self)
 
         self.subop = self.set_subop()
+        self.subop2 = self.set_subop2()
 
         ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -46,7 +48,39 @@ class CynoGenerator(Config):
 
         # なにこれ
         resp = requests.get(
-            "https://raw.githubusercontent.com/Sycamore0/GenshinData/main/ExcelBinOutput/ReliquaryAffixExcelConfigData.json"
+            "https://raw.githubusercontent.com/Sycamore0/GenshinData/main/ExcelBinOutput/ReliquaryAffixExcelConfigData.json",
+            timeout=10,
+        )
+
+        sub_stats_data = resp.json()
+
+        result = {}
+        for entry in sub_stats_data:
+            prop_type = entry["propType"]
+            entry_id = entry["id"]
+
+            del entry["id"]
+            del entry["propType"]
+
+            if prop_type not in result:
+                result[prop_type] = {}
+
+            result[prop_type][entry_id] = entry
+
+        self.write_json(result, subop_path)
+
+        return result
+
+    def set_subop2(self):
+        subop_path = f"{self.cwd}/mapping/subop2.json"
+
+        if os.path.exists(subop_path):
+            return self.read_json(subop_path)
+
+        # なにこれ
+        resp = requests.get(
+            "https://gitlab.com/YuukiPS/GC-Resources/-/raw/5.0/Resources/ExcelBinOutput/ReliquaryAffixExcelConfigData.json",
+            timeout=10,
         )
 
         sub_stats_data = resp.json()
@@ -91,15 +125,22 @@ class CynoGenerator(Config):
 
         # ?2
         for sub_stat in artifact.sub_stats:
-            stat = {
-                "option": self.status_prop[sub_stat.type],
-                "value": (
-                    sub_stat.value
-                    if sub_stat.type not in self.MAIN_STATS_PROPS
-                    else round(sub_stat.value)
-                ),
-                "values": [],
-            }
+            if self.rounded:
+                stat = {
+                    "option": self.status_prop[sub_stat.type],
+                    "value": (
+                        sub_stat.value
+                        if sub_stat.type not in self.MAIN_STATS_PROPS
+                        else round(sub_stat.value)
+                    ),
+                    "values": [],
+                }
+            else:
+                stat = {
+                    "option": self.status_prop[sub_stat.type],
+                    "value": sub_stat.value,
+                    "values": [],
+                }
 
             # スコア計算?
             if sub_stat.type in self.SCORE_MODIFIERS:
@@ -122,15 +163,24 @@ class CynoGenerator(Config):
             for i in [artifact.main_stat_id] + artifact.sub_stat_ids:
                 if str(i) in self.subop[sub_stat.type].keys():
                     value = self.subop[sub_stat.type][str(i)]["propValue"]
-                    if sub_stat.type in self.MAIN_STATS_PROPS:
-                        stat["values"].append(round(value))
+                    if self.rounded:
+                        if sub_stat.type in self.MAIN_STATS_PROPS:
+                            stat["values"].append(round(value))
+                        else:
+                            stat["values"].append(round(value * 100, 1))
                     else:
-                        stat["values"].append(round(value * 100, 1))
+                        if sub_stat.type in self.MAIN_STATS_PROPS:
+                            stat["values"].append(value)
+                        else:
+                            stat["values"].append(value * 100)
 
             stat["values"].sort()
             result["sub"].append(stat)
 
-        return result, round(score, 1)
+        if self.rounded:
+            return result, round(score, 1)
+        else:
+            return result, score
 
     def set_buff(self, c: enka.gi.Character):
         result = {}
@@ -203,9 +253,14 @@ class CynoGenerator(Config):
         background.save(filename, "png")
 
     def generation(
-        self, character: enka.gi.Character, score_type: str, background_path: str
+        self,
+        character: enka.gi.Character,
+        score_type: str,
+        background_path: str,
+        rounded=False,
     ):
-        #print("character", character)
+        # print("character", character)
+        self.rounded = rounded
 
         element = character.element.name
 
@@ -222,27 +277,50 @@ class CynoGenerator(Config):
         base_hp, hp, base_atk, atk, base_def, _def = 0, 0, 0, 0, 0, 0
         ms, cr, cd, er = 0, 0, 0, 0
 
-        for prop_type, stat in character.stats.items():
-            if prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_HP:
-                base_hp = round(stat.value)
-            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_HP:
-                hp = round(stat.value)
-            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_ATTACK:
-                base_atk = round(stat.value)
-            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_ATTACK:
-                atk = round(stat.value)
-            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_DEFENSE:
-                base_def = round(stat.value)
-            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_DEFENSE:
-                _def = round(stat.value)
-            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_ELEMENT_MASTERY:
-                ms = round(stat.value)
-            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CRITICAL:
-                cr = round(stat.value * 100, 1)
-            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CRITICAL_HURT:
-                cd = round(stat.value * 100, 1)
-            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CHARGE_EFFICIENCY:
-                er = round(stat.value * 100, 1)
+        if self.rounded:
+            for prop_type, stat in character.stats.items():
+                if prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_HP:
+                    base_hp = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_HP:
+                    hp = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_ATTACK:
+                    base_atk = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_ATTACK:
+                    atk = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_DEFENSE:
+                    base_def = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_DEFENSE:
+                    _def = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_ELEMENT_MASTERY:
+                    ms = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CRITICAL:
+                    cr = round(stat.value * 100, 1)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CRITICAL_HURT:
+                    cd = round(stat.value * 100, 1)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CHARGE_EFFICIENCY:
+                    er = round(stat.value * 100, 1)
+        else:
+            for prop_type, stat in character.stats.items():
+                if prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_HP:
+                    base_hp = stat.value
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_MAX_HP:
+                    hp = stat.value
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_ATTACK:
+                    base_atk = stat.value
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CUR_ATTACK:
+                    atk = stat.value
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_DEFENSE:
+                    base_def = stat.value
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CUR_DEFENSE:
+                    _def = stat.value
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_ELEMENT_MASTERY:
+                    ms = stat.value
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CRITICAL:
+                    cr = round(stat.value * 100, 1)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CRITICAL_HURT:
+                    cd = round(stat.value * 100, 1)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CHARGE_EFFICIENCY:
+                    er = round(stat.value * 100, 1)
 
         CharacterStatus: dict = {
             "HP": hp,
@@ -274,7 +352,9 @@ class CynoGenerator(Config):
             ),
             None,
         )
-        WeaponSubOP: list[enka.gi.Stat] = Weapon.stats[1] if len(Weapon.stats) > 1 else None
+        WeaponSubOP: list[enka.gi.Stat] = (
+            Weapon.stats[1] if len(Weapon.stats) > 1 else None
+        )
         WeaponSubOPKey: str = Weapon.stats[1].name if WeaponSubOP else None
         WeaponSubOPValue: int | float = Weapon.stats[1].value if WeaponSubOP else None
 
@@ -294,7 +374,7 @@ class CynoGenerator(Config):
                     ScoreTotal += score
                 case "EQUIP_SHOES":
                     ArtifactsData["clock"], score = self.set_artifact(e, score_type)
-                    ScoreData["clock"]: float = score
+                    ScoreData["clock"] = score
                     ScoreTotal += score
                 case "EQUIP_RING":
                     ArtifactsData["cup"], score = self.set_artifact(e, score_type)
@@ -313,7 +393,7 @@ class CynoGenerator(Config):
             if background_path.startswith("http") or background_path.startswith(
                 "https"
             ):
-                background = BytesIO(requests.get(background_path).content)
+                background = BytesIO(requests.get(background_path, timeout=10).content)
             else:
                 background = background_path
             Base = Image.open(background).resize((1920, 1080)).convert("RGBA")
@@ -567,7 +647,7 @@ class CynoGenerator(Config):
                 D.text((844, 67 + i * 70), k, font=config_font(26))
                 opicon = Image.open(f"{self.cwd}/emotes/{k}.png").resize((40, 40))
                 oppaste = Image.new("RGBA", Base.size, (255, 255, 255, 0))
-                opmask = opicon.copy()
+                # opmask = opicon.copy()
                 oppaste.paste(opicon, (789, 65 + i * 70))
                 Base = Image.alpha_composite(Base, oppaste)
                 D = ImageDraw.Draw(Base)
@@ -616,7 +696,7 @@ class CynoGenerator(Config):
             "元素チャージ効率": "元チャ効率",
             "HPパーセンテージ": "HP%",
         }
-        if WeaponSubOPKey != None:
+        if WeaponSubOPKey:
             BaseAtk = Image.open(f"{self.cwd}/emotes/{WeaponSubOPKey}.png").resize(
                 (23, 23)
             )
@@ -662,6 +742,7 @@ class CynoGenerator(Config):
 
             if not details:
                 continue
+
             atftype.append(details["type"])
             PreviewPaste = Image.new("RGBA", Base.size, (255, 255, 255, 0))
             Preview = Image.open(details["filename"]).resize((256, 256))
@@ -842,14 +923,17 @@ class CynoGenerator(Config):
 
         buffer = BytesIO()
         Base.save(buffer, "png")
-        Base.save("test.png")
+        if self.rounded:
+            Base.save("test-round.png")
+        else:
+            Base.save("test.png")
         return buffer
         # return pil_to_base64(Base)
 
 
-def pil_to_base64(img: Image.Image, format: str = "png") -> str:
+def pil_to_base64(img: Image.Image, fmt: str = "png") -> str:
     with BytesIO() as buffer:
-        img.save(buffer, format=format)
+        img.save(buffer, format=fmt)
         encoded_string = base64.b64encode(buffer.getvalue()).decode("ascii")
 
     return encoded_string
