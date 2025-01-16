@@ -7,7 +7,7 @@ from typing import List
 import requests
 from PIL import Image, ImageFont, ImageDraw, ImageEnhance, ImageFile
 
-from enkanetwork import EnkaNetworkAPI, CharacterInfo, CharacterSkill, Equipments, EquipmentsStats
+from EnkaNetwork.enkanetwork import EnkaNetworkAPI, CharacterInfo, CharacterSkill, Equipments, EquipmentsStats
 
 from config import Config
 
@@ -176,6 +176,9 @@ class CynoGenerator(Config):
 
     def generation(self, character: CharacterInfo, score_type: str, background_path: str):
         # config
+        print("character", character)
+        print("bg_path", background_path)
+
         element = character.element.name
 
         # CharacterData :dict = data.get("Character")
@@ -636,6 +639,7 @@ class CynoGenerator(Config):
 
         buffer = BytesIO()
         Base.save(buffer, "png")
+        Base.save("test.png")
         return buffer
         # return pil_to_base64(Base)
 
