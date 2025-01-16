@@ -24,7 +24,7 @@ async def main():
 
     client.generation(characters[list(characters)[0]], score_types[score_type], None)
 
-    client.client.__http.close()
+    await client.client.http.close()
 
 
 
