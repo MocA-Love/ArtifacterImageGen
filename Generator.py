@@ -120,8 +120,8 @@ class CynoGenerator(Config):
 
             # サブオプションとは?
             for i in [artifact.main_stat_id] + artifact.sub_stat_ids:
-                if str(i.id) in self.subop[sub_stat.type].keys():
-                    value = self.subop[sub_stat.type][str(i.id)]["propValue"]
+                if str(i) in self.subop[sub_stat.type].keys():
+                    value = self.subop[sub_stat.type][str(i)]["propValue"]
                     if sub_stat.type in self.MAIN_STATS_PROPS:
                         stat["values"].append(round(value))
                     else:
@@ -135,17 +135,26 @@ class CynoGenerator(Config):
     def set_buff(self, c: enka.gi.Character):
         result = {}
 
-        element_buffs = {
-            "物理ダメージ": c.stats.FIGHT_PROP_PHYSICAL_ADD_HURT.value,
-            "炎元素ダメージ": c.stats.FIGHT_PROP_FIRE_ADD_HURT.value,
-            "雷元素ダメージ": c.stats.FIGHT_PROP_ELEC_ADD_HURT.value,
-            "水元素ダメージ": c.stats.FIGHT_PROP_WATER_ADD_HURT.value,
-            "草元素ダメージ": c.stats.FIGHT_PROP_GRASS_ADD_HURT.value,
-            "風元素ダメージ": c.stats.FIGHT_PROP_WIND_ADD_HURT.value,
-            "岩元素ダメージ": c.stats.FIGHT_PROP_ROCK_ADD_HURT.value,
-            "氷元素ダメージ": c.stats.FIGHT_PROP_ICE_ADD_HURT.value,
-            "与える治癒効果": c.stats.FIGHT_PROP_HEAL_ADD.value,
-        }
+        element_buffs = {}
+        for prop_type, stat in c.stats.items():
+            if prop_type == enka.gi.FightPropType.FIGHT_PROP_PHYSICAL_ADD_HURT:
+                element_buffs["物理ダメージ"] = stat.value
+            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_FIRE_ADD_HURT:
+                element_buffs["炎元素ダメージ"] = stat.value
+            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_ELEC_ADD_HURT:
+                element_buffs["雷元素ダメージ"] = stat.value
+            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_WATER_ADD_HURT:
+                element_buffs["水元素ダメージ"] = stat.value
+            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_GRASS_ADD_HURT:
+                element_buffs["草元素ダメージ"] = stat.value
+            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_WIND_ADD_HURT:
+                element_buffs["風元素ダメージ"] = stat.value
+            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_ROCK_ADD_HURT:
+                element_buffs["岩元素ダメージ"] = stat.value
+            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_ICE_ADD_HURT:
+                element_buffs["氷元素ダメージ"] = stat.value
+            elif prop_type == enka.gi.FightPropType.FIGHT_PROP_HEAL_ADD:
+                element_buffs["与える治癒効果"] = stat.value
 
         # 0より大きい場合のみ
         for buff_name, value in element_buffs.items():
@@ -212,7 +221,7 @@ class CynoGenerator(Config):
             FriendShip: int = character.friendship_level
         # CharacterStatus : CharacterStats = character.stats
 
-        base_hp, hp, base_atk, atk, base_def, _def = 0, 0, 0, 0
+        base_hp, hp, base_atk, atk, base_def, _def = 0, 0, 0, 0, 0, 0
         ms, cr, cd, er = 0, 0, 0, 0
 
         for prop_type, stat in character.stats.items():
@@ -270,7 +279,7 @@ class CynoGenerator(Config):
         # WeaponSubOPKey: str = WeaponSubOP.name if WeaponSubOP else None
         # WeaponSubOPValue: int | float = WeaponSubOP.value if WeaponSubOP else None
 
-        WeaponSubOPKey, WeaponSubOPValue = "", ""
+        WeaponSubOPKey, WeaponSubOPValue = None, ""
 
         ScoreData: dict = {}
         ScoreCVBasis: str = score_type
