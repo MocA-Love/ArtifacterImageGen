@@ -277,19 +277,19 @@ class CynoGenerator(Config):
         base_hp, hp, base_atk, atk, base_def, _def = 0, 0, 0, 0, 0, 0
         ms, cr, cd, er = 0, 0, 0, 0
 
-        if self.rounded:
+        if True:#self.rounded:
             for prop_type, stat in character.stats.items():
                 if prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_HP:
                     base_hp = round(stat.value)
-                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_HP:
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_MAX_HP:
                     hp = round(stat.value)
                 elif prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_ATTACK:
                     base_atk = round(stat.value)
-                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_ATTACK:
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CUR_ATTACK:
                     atk = round(stat.value)
                 elif prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_DEFENSE:
                     base_def = round(stat.value)
-                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_DEFENSE:
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CUR_DEFENSE:
                     _def = round(stat.value)
                 elif prop_type == enka.gi.FightPropType.FIGHT_PROP_ELEMENT_MASTERY:
                     ms = round(stat.value)
