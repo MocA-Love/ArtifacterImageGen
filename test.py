@@ -30,7 +30,7 @@ async def main():
 
     score_type = "攻撃力"
 
-    print(characters[list(characters)[0]])
+    #print(characters[list(characters)[0]])
 
     client.generation(characters[list(characters)[0]], score_types[score_type], None)
 

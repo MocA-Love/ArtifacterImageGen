@@ -205,9 +205,7 @@ class CynoGenerator(Config):
     def generation(
         self, character: enka.gi.Character, score_type: str, background_path: str
     ):
-        # config
-        print("character", character)
-        print("bg_path", background_path)
+        #print("character", character)
 
         element = character.element.name
 
@@ -267,6 +265,7 @@ class CynoGenerator(Config):
         WeaponLevel: int = Weapon.level
         WeaponRank: int = Weapon.refinement
         WeaponRarity: int = Weapon.rarity
+        print(Weapon.stats)
         WeaponBaseATK: int = next(
             (
                 int(stat.value)
@@ -275,11 +274,9 @@ class CynoGenerator(Config):
             ),
             None,
         )
-        # WeaponSubOP: EquipmentsStats = Weapon.detail.substats[0] if Weapon.detail.substats else None
-        # WeaponSubOPKey: str = WeaponSubOP.name if WeaponSubOP else None
-        # WeaponSubOPValue: int | float = WeaponSubOP.value if WeaponSubOP else None
-
-        WeaponSubOPKey, WeaponSubOPValue = None, ""
+        WeaponSubOP: list[enka.gi.Stat] = Weapon.stats[1] if len(Weapon.stats) > 1 else None
+        WeaponSubOPKey: str = Weapon.stats[1].name if WeaponSubOP else None
+        WeaponSubOPValue: int | float = Weapon.stats[1].value if WeaponSubOP else None
 
         ScoreData: dict = {}
         ScoreCVBasis: str = score_type

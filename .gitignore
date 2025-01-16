@@ -3,5 +3,5 @@ cache/
 venv
 mapping/subop.json
 pages/*
-test.png
+test*.png
 .enka_py/
