@@ -123,7 +123,7 @@ class Generator(Config):
 
         return result, score
 
-    def fmt_number(self, num):
+    def fmt_number(self, num: int | float) -> int | float:
         rounded = round(num, 1)
 
         return int(rounded) if rounded.is_integer() else rounded
@@ -180,7 +180,7 @@ class Generator(Config):
 
         return path
 
-    def resize_image(self, filename, target_h=1200):
+    def resize_image(self, filename: str, target_h=1200) -> None:
         # なぜこのサイズにこだわっているかは後で考える
         image = Image.open(filename)
 
