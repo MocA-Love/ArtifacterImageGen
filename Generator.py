@@ -2,22 +2,14 @@ import os
 import base64
 from io import BytesIO
 from collections import Counter
-from typing import List
+from typing import Dict, List
 
 import requests
 from PIL import Image, ImageFont, ImageDraw, ImageEnhance, ImageFile
 
-from EnkaNetwork.enkanetwork import (
-    EnkaNetworkAPI,
-    CharacterInfo,
-    CharacterSkill,
-    Equipments,
-    EquipmentsStats,
-)
-
 import enka
 
-from config import Config
+from config import Config, PropDetail
 
 
 class CynoGenerator(Config):
@@ -39,17 +31,14 @@ class CynoGenerator(Config):
     async def initialize(self):
         await self.client.start()
 
-    def set_subop(self):
+    def set_subop(self) -> Dict[str, Dict[str, PropDetail]]:
         subop_path = f"{self.cwd}/mapping/subop.json"
 
         if os.path.exists(subop_path):
             return self.read_json(subop_path)
 
         # なにこれ
-        resp = requests.get(
-            "https://raw.githubusercontent.com/Sycamore0/GenshinData/main/ExcelBinOutput/ReliquaryAffixExcelConfigData.json",
-            timeout=10,
-        )
+        resp = requests.get(self.RELIQUARY_AFFIX_DATA, timeout=10)
 
         sub_stats_data = resp.json()
 
@@ -70,17 +59,14 @@ class CynoGenerator(Config):
 
         return result
 
-    def set_subop2(self):
+    def set_subop2(self) -> Dict[str, Dict[str, PropDetail]]:
         subop_path = f"{self.cwd}/mapping/subop2.json"
 
         if os.path.exists(subop_path):
             return self.read_json(subop_path)
 
         # なにこれ
-        resp = requests.get(
-            "https://gitlab.com/YuukiPS/GC-Resources/-/raw/5.0/Resources/ExcelBinOutput/ReliquaryAffixExcelConfigData.json",
-            timeout=10,
-        )
+        resp = requests.get(self.RELIQUARY_AFFIX_DATA_2, timeout=10)
 
         sub_stats_data = resp.json()
 
