@@ -23,8 +23,7 @@ async def main():
         "攻撃力": "ATTACK",
         "防御力": "DEFENSE",
         "HP": "HP",
-        "元素チャージ効率":
-        "EFFICIENCY",
+        "元素チャージ効率": "EFFICIENCY",
         "元素熟知": "ELEMENT"
     }
 
