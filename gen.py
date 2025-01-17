@@ -113,15 +113,20 @@ class Generator(Config):
                     value = self.subop[sub_stat.type][str(i)]["propValue"]
 
                     if sub_stat.type in self.MAIN_STATS_PROPS:
-                        stat["values"].append(round(value, 1))
+                        stat["values"].append(self.fmt_number(round(value, 1)))
                     else:
-                        stat["values"].append(round(value * 100, 1))
+                        stat["values"].append(self.fmt_number(round(value * 100, 1)))
 
-            print(stat["values"])
+            #print(stat["values"])
             stat["values"].sort()
             result["sub"].append(stat)
 
         return result, score
+
+    def fmt_number(self, num: int | float) -> int | float:
+        rounded = round(num, 1)
+
+        return int(rounded) if rounded.is_integer() else rounded
 
     def set_buff(self, c: enka.gi.Character):
         result = {}
@@ -156,6 +161,7 @@ class Generator(Config):
         if result:
             max_value = max(result.values())
             element = self.ELEMENT_MAP[c.element.name.upper()]
+            print(c.element.name)
             for k, v in sorted(result.items()):
                 if v == max_value:
                     if k == element:
@@ -174,7 +180,7 @@ class Generator(Config):
 
         return path
 
-    def resize_image(self, filename, target_h=1200):
+    def resize_image(self, filename: str, target_h=1200) -> None:
         # なぜこのサイズにこだわっているかは後で考える
         image = Image.open(filename)
 
@@ -197,12 +203,11 @@ class Generator(Config):
         self,
         character: enka.gi.Character,
         score_type: str,
-        background_path: str,
-        rounded=False,
+        background_path: str
     ):
         # print("character", character)
 
-        element = character.element.name
+        element = character.element.name.capitalize()
 
         # CharacterData :dict = data.get("Character")
         CharacterName: str = character.name
@@ -315,7 +320,7 @@ class Generator(Config):
                 background = background_path
             Base = Image.open(background).resize((1920, 1080)).convert("RGBA")
         else:
-            Base = Image.open(f"{self.cwd}/base/{element}.png")
+            Base = Image.open(f"{self.cwd}/base/{element.upper()}.png")
 
         # なにこれ
         if (character.id == 10000005) or (character.id == 10000007):
@@ -540,23 +545,22 @@ class Generator(Config):
             "会心ダメージ",
             "元素チャージ効率",
         )
+
+        dmgs = [
+            "氷元素ダメージ",
+            "水元素ダメージ",
+            "岩元素ダメージ",
+            "草元素ダメージ",
+            "風元素ダメージ",
+            "炎元素ダメージ",
+            "物理ダメージ",
+            "与える治癒効果",
+            "雷元素ダメージ",
+        ]
+
         for k, v in CharacterStatus.items():
-            if (
-                k
-                in [
-                    "氷元素ダメージ",
-                    "水元素ダメージ",
-                    "岩元素ダメージ",
-                    "草元素ダメージ",
-                    "風元素ダメージ",
-                    "炎元素ダメージ",
-                    "物理ダメージ",
-                    "与える治癒効果",
-                    "雷元素ダメージ",
-                ]
-                and v == 0
-            ):
-                k = f"{element}元素ダメージ"
+            print(k, v)
+
             try:
                 i = StateOP.index(k)
             except:

@@ -2,6 +2,8 @@
 
 UIDからよくみかけるビルドカードを生成します。
 
+※別のPJに取り組むので当分メンテナンスできない気がする
+
 <img src="https://user-images.githubusercontent.com/61573675/232234407-85bba40d-59ab-4f1c-846a-4ba711869bc1.png" width=720>
 
 ## 動作環境
