@@ -19,7 +19,6 @@ class CynoGenerator(Config):
         Config.__init__(self)
 
         self.subop = self.set_subop()
-        self.subop2 = self.set_subop2()
 
         ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -37,35 +36,6 @@ class CynoGenerator(Config):
         if os.path.exists(subop_path):
             return self.read_json(subop_path)
 
-        # なにこれ
-        resp = requests.get(self.RELIQUARY_AFFIX_DATA, timeout=10)
-
-        sub_stats_data = resp.json()
-
-        result = {}
-        for entry in sub_stats_data:
-            prop_type = entry["propType"]
-            entry_id = entry["id"]
-
-            del entry["id"]
-            del entry["propType"]
-
-            if prop_type not in result:
-                result[prop_type] = {}
-
-            result[prop_type][entry_id] = entry
-
-        self.write_json(result, subop_path)
-
-        return result
-
-    def set_subop2(self) -> Dict[str, Dict[str, PropDetail]]:
-        subop_path = f"{self.cwd}/mapping/subop2.json"
-
-        if os.path.exists(subop_path):
-            return self.read_json(subop_path)
-
-        # なにこれ
         resp = requests.get(self.RELIQUARY_AFFIX_DATA_2, timeout=10)
 
         sub_stats_data = resp.json()
