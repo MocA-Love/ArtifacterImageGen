@@ -12,7 +12,7 @@ import enka
 from config import Config, PropDetail
 
 
-class CynoGenerator(Config):
+class Generator(Config):
     def __init__(self, cwd="./ArtifacterImageGen"):
         self.cwd = cwd
 

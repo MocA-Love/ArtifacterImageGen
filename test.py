@@ -1,12 +1,12 @@
 import asyncio
 
-from Generator import CynoGenerator
+from gen import Generator
 
 
 async def main():
     UID = "847902683"
 
-    client = CynoGenerator(cwd=".")
+    client = Generator(cwd=".")
     await client.initialize()
 
     player_data = await client.client.fetch_showcase(UID)
