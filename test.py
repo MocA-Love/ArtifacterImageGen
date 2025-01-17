@@ -6,7 +6,7 @@ from gen import Generator
 async def main():
     UID = "847902683"
 
-    client = Generator(cwd=".")
+    client = Generator()
     await client.initialize()
 
     player_data = await client.client.fetch_showcase(UID)
@@ -23,8 +23,7 @@ async def main():
         "攻撃力": "ATTACK",
         "防御力": "DEFENSE",
         "HP": "HP",
-        "元素チャージ効率":
-        "EFFICIENCY",
+        "元素チャージ効率": "EFFICIENCY",
         "元素熟知": "ELEMENT"
     }
 

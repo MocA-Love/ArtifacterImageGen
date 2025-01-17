@@ -11,14 +11,10 @@ UIDからよくみかけるビルドカードを生成します。
 
 ## streamlitを用いた動作方法
 
-必要ライブラリのインストール
+ライブラリのインストール
 
 ```
 pip install -r requirements.txt
-```
-
-```
-pip install streamlit
 ```
 
 起動
