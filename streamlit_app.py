@@ -43,9 +43,8 @@ async def main():
     except:
         pass
     content = """
-  # Build-Card Generator
-  ##### 原神のUIDからビルドカードを生成できます
-  ※バグ報告はDiscordからお願いします
+  # Build-Card Generator (dev)
+  ##### UIDからビルドカード生成
   """
     st.write(content, unsafe_allow_html=True)
     UID = st.text_input("UIDを入力", value=queryUID if queryUID else "")
@@ -66,30 +65,14 @@ async def main():
             int(UID)
         except:
             placeholder.empty()
-            st.write("数字で入力してね。")
+            st.write("数字で入力してね")
             return
 
         try:
             player_data = await client.client.fetch_showcase(UID)
-        except EnkaServerRateLimit:
-            placeholder.empty()
-            st.write("レートリミットに達しました。")
-            return
-        except EnkaServerMaintanance:
-            placeholder.empty()
-            st.write("EnkaNetworkがメンテナンス中です。")
-            return
-        except EnkaPlayerNotFound:
-            placeholder.empty()
-            st.write("プレイヤーが見つかりませんでした。")
-            return
-        except EnkaServerError:
-            placeholder.empty()
-            st.write("EnkaNetworkでエラーが発生しました。")
-            return
         except Exception as e:
             placeholder.empty()
-            st.write(f"プレイヤー情報の取得に失敗しました。{e}")
+            st.write(f"プレイヤー情報の取得に失敗たよ: {e}")
             return
         placeholder.empty()
         player_info = f"""
@@ -179,9 +162,9 @@ async def main():
                     characters[character], score_types[score_type], None
                 )
                 placeholder.image(Image)
-                st.write("画像を長押し / 右クリックで保存できます。")
+                st.write("画像を長押し / 右クリックで保存")
         else:
-            st.write("キャラクター情報の取得に失敗しました。")
+            st.write("キャラクター情報の取得に失敗したよ")
 
     await client.client.close()
     print("closed")
