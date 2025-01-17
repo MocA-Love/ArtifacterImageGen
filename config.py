@@ -21,13 +21,13 @@ class Config(object):
     }
 
     ELEMENT_MAP = {
-        "Pyro": "炎元素ダメージ",
-        "Electro": "雷元素ダメージ",
-        "Hydro": "水元素ダメージ",
-        "Dendro": "草元素ダメージ",
-        "Anemo": "風元素ダメージ",
-        "Geo": "岩元素ダメージ",
-        "Cryo": "氷元素ダメージ",
+        "PYRO": "炎元素ダメージ",
+        "ELECTRO": "雷元素ダメージ",
+        "HYDRO": "水元素ダメージ",
+        "DENDRO": "草元素ダメージ",
+        "ANEMO": "風元素ダメージ",
+        "GEO": "岩元素ダメージ",
+        "CRYO": "氷元素ダメージ",
     }
 
     MAIN_STATS_PROPS = [

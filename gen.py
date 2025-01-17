@@ -155,7 +155,7 @@ class Generator(Config):
         # 最大値を探す ← 原神の計算方法がいまいちわからないのであとで解析
         if result:
             max_value = max(result.values())
-            element = self.ELEMENT_MAP[c.element.name]
+            element = self.ELEMENT_MAP[c.element.name.upper()]
             for k, v in sorted(result.items()):
                 if v == max_value:
                     if k == element:

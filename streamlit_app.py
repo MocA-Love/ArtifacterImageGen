@@ -1,17 +1,22 @@
-import streamlit as st
 import asyncio
+import logging
+
+import enka
+import streamlit as st
+
 from gen import Generator
 from enkanetwork.exception import *
-import logging
-import asyncio
 
 logger = logging.getLogger()
 
 
 async def main():
-    gen_client = Generator(cwd=".")
+    client = Generator()
+    await client.initialize()
+
     if "player_info" not in st.session_state:
         st.session_state.player_info = False
+
     params = st.query_params
     if params.get("uid"):
         queryUID = params["uid"]
@@ -19,7 +24,7 @@ async def main():
         queryUID = None
 
     st.set_page_config(
-        page_title="CYNO-Builder on Web",
+        page_title="Build-Card Generator",
         page_icon="Assets/cyno.png",
         layout="wide",
         initial_sidebar_state="collapsed",
@@ -39,13 +44,8 @@ async def main():
     except:
         pass
     content = """
-  # Web版Artifacter (CYNO-Builder)
-  [![Twitter](https://img.shields.io/badge/Artifacter-%40ArtifacterBot-1DA1F2?logo=twitter&style=flat-square)](https://twitter.com/ArtifacterBot)
-  [![Twitter](https://img.shields.io/badge/開発者Twitter-%40__0kq__-1DA1F2?logo=twitter&style=flat-square)](https://twitter.com/_0kq_)
-  [![Discord](https://img.shields.io/discord/972865249583702086?logo=Discord&label=Discord&style=flat-square)](https://discord.gg/9gPuaFWXzX)
-  [![FANBOX](https://img.shields.io/badge/%E9%96%8B%E7%99%BA%E6%94%AF%E6%8F%B4-FANBOX-orange?style=flat-square)](https://net0kq.fanbox.cc/)
-  [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fartifacter-cyno.streamlit.app&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=%E3%82%A2%E3%82%AF%E3%82%BB%E3%82%B9%E6%95%B0&edge_flat=true)](https://hits.seeyoufarm.com)
-  ##### 原神のUIDからビルドカードを生成できます  
+  # Build-Card Generator
+  ##### 原神のUIDからビルドカードを生成できます
   ※バグ報告はDiscordからお願いします
   """
     st.write(content, unsafe_allow_html=True)
@@ -60,10 +60,18 @@ async def main():
         or st.session_state.player_info
     ):
         placeholder = st.empty()
+        placeholder.empty()
         placeholder.write("プレイヤー情報を取得中...")
+
         try:
-            async with gen_client.client:
-                player_data = await gen_client.client.fetch_user_by_uid(UID)
+            int(UID)
+        except:
+            placeholder.empty()
+            st.write("数字で入力してね。")
+            return
+
+        try:
+            player_data = await client.client.fetch_showcase(UID)
         except EnkaServerRateLimit:
             placeholder.empty()
             st.write("レートリミットに達しました。")
@@ -89,8 +97,8 @@ async def main():
 ### プレイヤー情報
 ##### {player_data.player.nickname} Lv.{player_data.player.level}
 - 世界ランク{player_data.player.world_level}
-- 螺旋 {player_data.player.abyss_floor}-{player_data.player.abyss_room}
-- アチーブメント数 {player_data.player.achievement}
+- 螺旋 {player_data.player.abyss_floor}-{player_data.player.abyss_level}
+- アチーブメント数 {player_data.player.achievements}
 """
         st.write(player_info)
         if player_data.characters:
@@ -98,24 +106,64 @@ async def main():
                 v.name + " Lv." + str(v.level): v for v in player_data.characters
             }
             character = st.selectbox("キャラクターを選択", characters.keys())
+
+            base_hp, hp, base_atk, atk, base_def, _def = 0, 0, 0, 0, 0, 0
+            ms, cr, cd, er = 0, 0, 0, 0
+
+            for prop_type, stat in characters[character].stats.items():
+                if prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_HP:
+                    base_hp = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_MAX_HP:
+                    hp = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_ATTACK:
+                    base_atk = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CUR_ATTACK:
+                    atk = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_BASE_DEFENSE:
+                    base_def = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CUR_DEFENSE:
+                    _def = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_ELEMENT_MASTERY:
+                    ms = round(stat.value)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CRITICAL:
+                    cr = round(stat.value * 100, 1)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CRITICAL_HURT:
+                    cd = round(stat.value * 100, 1)
+                elif prop_type == enka.gi.FightPropType.FIGHT_PROP_CHARGE_EFFICIENCY:
+                    er = round(stat.value * 100, 1)
+
+            weapon = characters[character].weapon
+            WeaponBaseATK: int = next(
+                (
+                    int(stat.value)
+                    for stat in weapon.stats
+                    if stat.type == "FIGHT_PROP_BASE_ATTACK"
+                ),
+                None,
+            )
+            WeaponSubOP: list[enka.gi.Stat] = (
+                weapon.stats[1] if len(weapon.stats) > 1 else None
+            )
+            WeaponSubOPKey: str = weapon.stats[1].name if WeaponSubOP else None
+            WeaponSubOPValue: int | float = weapon.stats[1].value if WeaponSubOP else None
+
             character_info = f"""
 ### キャラクター情報
 ##### {characters[character].name} Lv.{characters[character].level}
-- HP: {round(characters[character].stats.FIGHT_PROP_MAX_HP.value)}
+- HP: {hp}
+- 攻撃力: {atk}
+- 防御力: {_def}
+- 元素熟知: {ms}
+- 会心率: {cr}%
+- 会心ダメージ: {cd}%
+- 元素チャージ効率: {er}%
 - 命ノ星座: {characters[character].constellations_unlocked}凸
-- HP: {round(characters[character].stats.FIGHT_PROP_MAX_HP.value)}
-- 攻撃力: {round(characters[character].stats.FIGHT_PROP_CUR_ATTACK.value)}
-- 防御力: {round(characters[character].stats.FIGHT_PROP_CUR_DEFENSE.value)}
-- 元素熟知: {round(characters[character].stats.FIGHT_PROP_ELEMENT_MASTERY.value)}
-- 会心率: {round(characters[character].stats.FIGHT_PROP_CRITICAL.value*100,1)}%
-- 会心ダメージ: {round(characters[character].stats.FIGHT_PROP_CRITICAL_HURT.value*100,1)}%
-- 元素チャージ効率: {round(characters[character].stats.FIGHT_PROP_CHARGE_EFFICIENCY.value*100,1)}%
-##### {characters[character].equipments[-1].detail.name} Lv.{characters[character].equipments[-1].level}
-- 精錬ランク: {characters[character].equipments[-1].refinement}
-- 基礎攻撃力: {round(characters[character].equipments[-1].detail.mainstats.value)}
+##### {weapon.name} Lv.{weapon.level}
+- 基礎攻撃力: {WeaponBaseATK}
+- 精錬ランク: {weapon.refinement}
 """
-            if characters[character].equipments[-1].detail.substats:
-                character_info += f"- {characters[character].equipments[-1].detail.substats[0].name}: {characters[character].equipments[-1].detail.substats[0].value}"
+            if WeaponSubOP:
+                character_info += f"- {WeaponSubOPKey}: {WeaponSubOPValue}"
             st.write(character_info)
             score_types = {
                 "攻撃力": "ATTACK",
@@ -128,7 +176,7 @@ async def main():
             if st.button("ビルドカードを生成"):
                 placeholder = st.empty()
                 placeholder.write("ビルドカードを生成中...")
-                Image = gen_client.generation(
+                Image = client.generation(
                     characters[character], score_types[score_type], None
                 )
                 placeholder.image(Image)
@@ -136,6 +184,8 @@ async def main():
         else:
             st.write("キャラクター情報の取得に失敗しました。")
 
+    await client.client.close()
+    print("closed")
 
 def session_player():
     st.session_state.player_info = True
@@ -148,5 +198,4 @@ def gen_image(client, character):
 
 
 if __name__ == "__main__":
-    loop = asyncio.new_event_loop()
-    loop.run_until_complete(main())
+    asyncio.run(main())
