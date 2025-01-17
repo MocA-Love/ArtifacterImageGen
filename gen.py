@@ -320,7 +320,7 @@ class Generator(Config):
                 background = background_path
             Base = Image.open(background).resize((1920, 1080)).convert("RGBA")
         else:
-            Base = Image.open(f"{self.cwd}/base/{element.upper()}.png")
+            Base = Image.open(f"{self.cwd}/base/{element}.png")
 
         # なにこれ
         if (character.id == 10000005) or (character.id == 10000007):

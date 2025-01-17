@@ -159,7 +159,7 @@ async def main():
                 placeholder = st.empty()
                 placeholder.write("ビルドカードを生成中...")
                 Image = client.generation(
-                    characters[character], score_types[score_type], None
+                    characters[character], score_types[score_type]
                 )
                 placeholder.image(Image)
                 st.write("画像を長押し / 右クリックで保存")
