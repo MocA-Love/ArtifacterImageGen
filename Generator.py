@@ -304,7 +304,7 @@ class CynoGenerator(Config):
         ScoreTotal = round(ScoreTotal, 1)
 
         def config_font(size):
-            return ImageFont.truetype(f"{self.cwd}/Assets/ja-jp.ttf", size)
+            return ImageFont.truetype(f"{self.cwd}/assets/ja-jp.ttf", size)
 
         if background_path:
             if background_path.startswith("http") or background_path.startswith(
@@ -315,7 +315,7 @@ class CynoGenerator(Config):
                 background = background_path
             Base = Image.open(background).resize((1920, 1080)).convert("RGBA")
         else:
-            Base = Image.open(f"{self.cwd}/Base/{element}.png")
+            Base = Image.open(f"{self.cwd}/base/{element}.png")
 
         # なにこれ
         if (character.id == 10000005) or (character.id == 10000007):
@@ -338,7 +338,7 @@ class CynoGenerator(Config):
         y = int((1024 - CharacterImage.height) / 2)
         CharacterBack.paste(CharacterImage, (x, y))
         CharacterImage = CharacterBack
-        Shadow = Image.open(f"{self.cwd}/Assets/Shadow.png").resize(Base.size)
+        Shadow = Image.open(f"{self.cwd}/assets/Shadow.png").resize(Base.size)
         CharacterImage = CharacterImage.crop((289, 0, 1728, 1024))
         CharacterImage = CharacterImage.resize(
             (int(CharacterImage.width * 0.75), int(CharacterImage.height * 0.75))
@@ -348,13 +348,13 @@ class CynoGenerator(Config):
 
         if CharacterName in ["アルハイゼン", "ヌヴィレット"]:
             CharacterAvatarMask2 = (
-                Image.open(f"{self.cwd}/Assets/Alhaitham.png")
+                Image.open(f"{self.cwd}/assets/Alhaitham.png")
                 .convert("L")
                 .resize(CharacterImage.size)
             )
         else:
             CharacterAvatarMask2 = (
-                Image.open(f"{self.cwd}/Assets/CharacterMask.png")
+                Image.open(f"{self.cwd}/assets/CharacterMask.png")
                 .convert("L")
                 .resize(CharacterImage.size)
             )
@@ -380,7 +380,7 @@ class CynoGenerator(Config):
         Base = Image.alpha_composite(Base, WeaponPaste)
 
         WeaponRImage = Image.open(
-            f"{self.cwd}/Assets/Rarelity/{WeaponRarity}.png"
+            f"{self.cwd}/assets/rarelity/{WeaponRarity}.png"
         ).convert("RGBA")
         WeaponRImage = WeaponRImage.resize(
             (int(WeaponRImage.width * 0.97), int(WeaponRImage.height * 0.97))
@@ -392,7 +392,7 @@ class CynoGenerator(Config):
         Base = Image.alpha_composite(Base, WeaponRPaste)
 
         # 天賦
-        TalentBase = Image.open(f"{self.cwd}/Assets/TalentBack.png")
+        TalentBase = Image.open(f"{self.cwd}/assets/TalentBack.png")
         TalentBasePaste = Image.new("RGBA", Base.size, (255, 255, 255, 0))
         TalentBase = TalentBase.resize(
             (int(TalentBase.width / 1.5), int(TalentBase.height / 1.5))
@@ -424,12 +424,12 @@ class CynoGenerator(Config):
 
         # 凸
         CBase = (
-            Image.open(f"{self.cwd}/命の星座/{element}.png")
+            Image.open(f"{self.cwd}/constellation/{element}.png")
             .resize((90, 90))
             .convert("RGBA")
         )
         Clock = (
-            Image.open(f"{self.cwd}/命の星座/{element}LOCK.png")
+            Image.open(f"{self.cwd}/constellation/{element}_locked.png")
             .resize((90, 90))
             .convert("RGBA")
         )
@@ -474,7 +474,7 @@ class CynoGenerator(Config):
                 radius=2,
                 fill="black",
             )
-            FriendShipIcon = Image.open(f"{self.cwd}/Assets/Love.png").convert("RGBA")
+            FriendShipIcon = Image.open(f"{self.cwd}/assets/Love.png").convert("RGBA")
             FriendShipIcon = FriendShipIcon.resize(
                 (int(FriendShipIcon.width * (24 / FriendShipIcon.height)), 24)
             )
@@ -671,7 +671,7 @@ class CynoGenerator(Config):
             Pmask1 = Preview.copy()
 
             Pmask = (
-                Image.open(f"{self.cwd}/Assets/ArtifactMask.png")
+                Image.open(f"{self.cwd}/assets/ArtifactMask.png")
                 .convert("L")
                 .resize(Preview.size)
             )
