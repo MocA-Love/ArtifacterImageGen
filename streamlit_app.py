@@ -5,7 +5,6 @@ import enka
 import streamlit as st
 
 from gen import Generator
-from enkanetwork.exception import *
 
 logger = logging.getLogger()
 
