@@ -13,7 +13,7 @@ from config import Config, PropDetail
 
 
 class Generator(Config):
-    def __init__(self, cwd="./ArtifacterImageGen"):
+    def __init__(self, cwd="."):
         self.cwd = cwd
 
         Config.__init__(self)
