@@ -1,4 +1,5 @@
 import asyncio
+import time
 
 from gen import Generator
 
@@ -31,7 +32,10 @@ async def main():
 
     #print(characters[list(characters)[0]])
 
-    client.generation(characters[list(characters)[2]], score_types[score_type], None)
+    s = time.time()
+    client.generation(characters[list(characters)[0]], score_types[score_type], None)
+    e = time.time()
+    print(f"processing time: {e-s}")
 
     # アセットの更新
     #await client.update_assets()
